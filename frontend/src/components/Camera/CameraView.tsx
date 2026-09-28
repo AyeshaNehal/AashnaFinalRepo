@@ -18,6 +18,7 @@ export const CameraView: React.FC = () => {
   const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
   const dispatch = useDispatch();
   const [isReady, setIsReady] = useState(false);
+  const [modelError, setModelError] = useState<string | null>(null);
   
   // Commit a sign once the smoothed prediction has been stable for this duration.
   // 400 ms (~12 frames at 30 fps) gives near-instant feedback while the
@@ -273,6 +274,16 @@ export const CameraView: React.FC = () => {
 
         dispatch(setPrediction(prediction));
 
+        if (prediction.letter === "?" && prediction.confidence === 0) {
+          setModelError(
+            useLandmarkRef.current
+              ? "Landmark model files are missing. Add frontend/public/models/landmark_model/model.json and its weight files."
+              : "CNN model files are missing. Add frontend/public/models/asl_model/model.json and its weight files."
+          );
+        } else {
+          setModelError(null);
+        }
+
         const now = Date.now();
 
         // ── Temporal smoothing via confidence-weighted majority vote ────────
@@ -439,6 +450,16 @@ export const CameraView: React.FC = () => {
         <video ref={videoRef} className="hidden" playsInline />
         <canvas ref={canvasRef} width={640} height={480} className="w-full h-full object-cover rounded-[1.5rem]" />
         <canvas ref={hiddenCanvasRef} width={64} height={64} className="hidden" />
+
+        {modelError && (
+          <div className="absolute inset-x-6 top-6 z-20 rounded-2xl border border-amber-200 bg-amber-50/95 px-5 py-4 text-sm text-amber-900 shadow-xl backdrop-blur-sm">
+            <p className="font-black">Sign recognition is unavailable</p>
+            <p className="mt-1">{modelError}</p>
+            <p className="mt-2 text-xs text-amber-700">
+              The camera is working, but TensorFlow.js cannot classify signs until the exported model bundle is present.
+            </p>
+          </div>
+        )}
 
         <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end pointer-events-none">
           {/* Camera status */}
