@@ -24,8 +24,11 @@ export const TutorialCard: React.FC<TutorialCardProps> = ({ tutorial, onOpen }) 
     >
       {/* Thumbnail */}
       <div className="relative aspect-video bg-gradient-to-br from-lime-50 via-emerald-50 to-cyan-50 flex items-center justify-center overflow-hidden">
+        {tutorial.thumbnailUrl && (
+          <img src={tutorial.thumbnailUrl} alt={tutorial.title} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500" />
+        )}
         <div
-          className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+          className={`relative z-10 w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
             isAvailable
               ? 'bg-white shadow-lg text-lime-500 group-hover:scale-110 group-hover:bg-lime-500 group-hover:text-white'
               : 'bg-white/60 text-slate-300'
@@ -35,12 +38,12 @@ export const TutorialCard: React.FC<TutorialCardProps> = ({ tutorial, onOpen }) 
         </div>
 
         {!isAvailable && (
-          <span className="absolute top-3 right-3 bg-slate-900/70 backdrop-blur-sm text-white text-[0.65rem] font-black uppercase tracking-wider px-3 py-1.5 rounded-full">
+          <span className="absolute top-3 right-3 bg-slate-900/70 backdrop-blur-sm text-white text-[0.65rem] font-black uppercase tracking-wider px-3 py-1.5 rounded-full z-10">
             Video coming soon
           </span>
         )}
 
-        <span className="absolute bottom-3 left-3 bg-slate-900/70 backdrop-blur-sm text-white text-xs font-black px-2.5 py-1 rounded-full">
+        <span className="absolute bottom-3 left-3 bg-slate-900/70 backdrop-blur-sm text-white text-xs font-black px-2.5 py-1 rounded-full z-10">
           ⏱ {tutorial.duration}
         </span>
       </div>

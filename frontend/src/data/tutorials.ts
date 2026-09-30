@@ -14,11 +14,12 @@ export interface Tutorial {
    * and the player then show the "Video coming soon" placeholder.
    */
   videoUrl: string | null;
+  /**
+   * Path to the thumbnail image file.
+   */
+  thumbnailUrl?: string | null;
 }
 
-// Full ASL curriculum organised by difficulty. Each lesson describes a
-// self-contained topic; recordings are dropped into frontend/public/videos/
-// and the videoUrl is updated from null to the path when ready.
 export const tutorials: Tutorial[] = [
   // ─── Beginner ─────────────────────────────────────────────────────────────
   {
@@ -26,183 +27,73 @@ export const tutorials: Tutorial[] = [
     title: 'Welcome to Aashna',
     description:
       'A quick walkthrough of the app: signing to the camera, watching your text build up, and speaking it aloud.',
-    duration: '3:00',
+    duration: '2:58',
     level: 'Beginner',
-    videoUrl: null,
+    videoUrl: '/videos/Welcome To Aashna.mp4',
+    thumbnailUrl: '/videos/Welcome To Aashna thumbnail.png',
   },
   {
-    id: 'fingerspelling-first-letters',
-    title: 'Fingerspelling: Your First Letters',
+    id: 'learn-the-abcs',
+    title: "Learn The ABC's",
     description:
-      'Learn the correct handshapes for the first letters of the ASL alphabet, shown slowly from two angles.',
-    duration: '5:30',
+      'Learn the correct handshapes for the ASL alphabet.',
+    duration: '4:36',
     level: 'Beginner',
-    videoUrl: null,
+    videoUrl: "/videos/Learn The ABC's.mp4",
+    thumbnailUrl: '/videos/6c49776c-dd8a-4528-827f-a5e2d4efd570-Cover.jpg',
   },
   {
-    id: 'signing-numbers',
-    title: 'Signing Numbers 0–9',
+    id: 'learn-the-numbers',
+    title: 'Learn The Numbers',
     description:
       'How to form each number clearly, and how to switch the recognizer into Numbers mode for practice.',
-    duration: '4:15',
+    duration: '1:16',
     level: 'Beginner',
-    videoUrl: null,
-  },
-  {
-    id: 'alphabet-full-review',
-    title: 'The Full Alphabet: A to Z',
-    description:
-      'A slow, complete run-through of every ASL letter handshape — ideal as a daily warm-up before practice.',
-    duration: '6:00',
-    level: 'Beginner',
-    videoUrl: null,
-  },
-  {
-    id: 'basic-greetings',
-    title: 'Basic Greetings: Hi, Hello & Goodbye',
-    description:
-      'The three most-used signs in any conversation, plus "Good morning" and "See you later".',
-    duration: '3:45',
-    level: 'Beginner',
-    videoUrl: null,
-  },
-  {
-    id: 'family-signs',
-    title: 'Family Signs: Mom, Dad, Brother, Sister',
-    description:
-      'How to sign the core family members — useful for introductions and talking about home.',
-    duration: '4:30',
-    level: 'Beginner',
-    videoUrl: null,
-  },
-  {
-    id: 'yes-no-please-thanks',
-    title: 'Essential Manners: Yes, No, Please & Thank You',
-    description:
-      'Four signs you will use in every conversation — and the facial expressions that go with them.',
-    duration: '3:00',
-    level: 'Beginner',
-    videoUrl: null,
+    videoUrl: '/videos/Learn The Numbers.mp4',
+    thumbnailUrl: '/videos/Learn The Numbers-Cover.jpg',
   },
 
   // ─── Intermediate ─────────────────────────────────────────────────────────
   {
-    id: 'better-camera-recognition',
-    title: 'Getting the Best Camera Recognition',
+    id: 'the-duolingo-mode',
+    title: 'The Duolingo Mode',
     description:
-      'Lighting, hand placement, and steadiness tips that make the recognizer catch your signs every time.',
-    duration: '2:45',
+      'Practice your skills with our interactive Duolingo-style learning mode.',
+    duration: '0:57',
     level: 'Intermediate',
-    videoUrl: null,
+    videoUrl: '/videos/The Duolingo Mode.mp4',
+    thumbnailUrl: '/videos/The Duolingo Mode-Cover.jpg',
   },
   {
-    id: 'games-and-quizzes',
-    title: 'Practicing with Games & Quizzes',
+    id: 'the-number-games',
+    title: 'The Number Games',
     description:
-      'A tour of Flashcards, Duolingo Mode, the Numbers Game, and Spelling Bee — and how each one builds your skills.',
-    duration: '4:00',
+      'Test your number signing speed and accuracy with this fun interactive game.',
+    duration: '2:17',
     level: 'Intermediate',
-    videoUrl: null,
+    videoUrl: '/videos/The Number Games.mp4',
+    thumbnailUrl: '/videos/Screenshot 2026-09-30 152617.png',
   },
   {
-    id: 'fingerspelling-speed',
-    title: 'Fingerspelling Speed Drills',
+    id: 'the-spelling-bee-mode',
+    title: 'The Spelling Bee Mode',
     description:
-      'Techniques for moving from slow, deliberate signing to smooth, rapid finger-spelling without losing clarity.',
-    duration: '5:00',
+      'Improve your fingerspelling speed and recognition with the Spelling Bee challenge.',
+    duration: '2:15',
     level: 'Intermediate',
-    videoUrl: null,
+    videoUrl: '/videos/The Spelling Bee Mode.mp4',
+    thumbnailUrl: '/videos/Screenshot 2026-09-30 152841.png',
   },
-  {
-    id: 'common-expressions',
-    title: 'Common Expressions & Idioms',
-    description:
-      'Signs for "I don\'t know", "I\'m sorry", "Excuse me", and other everyday expressions that make conversations flow.',
-    duration: '5:30',
-    level: 'Intermediate',
-    videoUrl: null,
-  },
-  {
-    id: 'asking-questions',
-    title: 'Asking Questions in ASL',
-    description:
-      'How to form Who, What, Where, When, Why, and How questions — including the non-manual markers that signal a question.',
-    duration: '4:45',
-    level: 'Intermediate',
-    videoUrl: null,
-  },
-  {
-    id: 'food-and-drinks',
-    title: 'Signing About Food & Drinks',
-    description:
-      'Vocabulary for common foods, drinks, and restaurant phrases — "I\'m hungry", "Water please", "Delicious".',
-    duration: '5:15',
-    level: 'Intermediate',
-    videoUrl: null,
-  },
-  {
-    id: 'describing-people',
-    title: 'Describing People & Emotions',
-    description:
-      'Adjectives for appearance and feelings — "happy", "tired", "tall", "friendly" — and how to combine them into sentences.',
-    duration: '4:30',
-    level: 'Intermediate',
-    videoUrl: null,
-  },
-
+  
   // ─── Advanced ─────────────────────────────────────────────────────────────
   {
-    id: 'ai-chat-buddy',
-    title: 'Chatting with Your AI Buddy',
+    id: 'the-reply-mode',
+    title: 'The Reply Mode',
     description:
-      'How to sign a message, send it to the chat buddy in Roleplay mode, and follow the conversation.',
-    duration: '3:30',
+      'Advanced practice: signing full replies to conversational prompts in real-time.',
+    duration: '0:43',
     level: 'Advanced',
-    videoUrl: null,
-  },
-  {
-    id: 'asl-grammar-basics',
-    title: 'ASL Grammar: Topic-Comment Structure',
-    description:
-      'How ASL sentences are built differently from English — topic first, then comment — and how facial grammar replaces tone of voice.',
-    duration: '6:00',
-    level: 'Advanced',
-    videoUrl: null,
-  },
-  {
-    id: 'conversational-asl',
-    title: 'Conversational ASL: Beyond Single Signs',
-    description:
-      'Putting signs together into fluent sentences — classifiers, directionality, and using space to track who did what.',
-    duration: '7:00',
-    level: 'Advanced',
-    videoUrl: null,
-  },
-  {
-    id: 'storytelling-in-asl',
-    title: 'Storytelling in ASL',
-    description:
-      'Techniques for narrating a story: role-shifting, eye-gaze, and using signing space to show characters and action.',
-    duration: '6:30',
-    level: 'Advanced',
-    videoUrl: null,
-  },
-  {
-    id: 'deaf-culture-introduction',
-    title: 'Introduction to Deaf Culture',
-    description:
-      'The history, values, and social norms of the Deaf community — and why ASL is much more than "English on the hands".',
-    duration: '5:00',
-    level: 'Advanced',
-    videoUrl: null,
-  },
-  {
-    id: 'advanced-fingerspelling',
-    title: 'Advanced Fingerspelling: Long Words & Names',
-    description:
-      'Strategies for smoothly finger-spelling 7+ letter words, proper nouns, and technical terms without breaking flow.',
-    duration: '5:30',
-    level: 'Advanced',
-    videoUrl: null,
-  },
+    videoUrl: '/videos/The Reply Mode.mp4',
+    thumbnailUrl: '/videos/The Reply Mode-Cover.jpg',
+  }
 ];

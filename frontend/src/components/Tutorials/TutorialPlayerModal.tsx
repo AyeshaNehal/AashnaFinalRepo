@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Play, X } from 'lucide-react';
 import type { Tutorial } from '../../data/tutorials';
 
@@ -8,9 +8,14 @@ interface TutorialPlayerModalProps {
 }
 
 export const TutorialPlayerModal: React.FC<TutorialPlayerModalProps> = ({ tutorial, onClose }) => {
+  const [exactTime, setExactTime] = useState<string | null>(null);
+
   // Close on Escape and lock page scroll while the player is open.
   useEffect(() => {
-    if (!tutorial) return;
+    if (!tutorial) {
+      setExactTime(null);
+      return;
+    }
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
@@ -43,7 +48,7 @@ export const TutorialPlayerModal: React.FC<TutorialPlayerModalProps> = ({ tutori
           <button
             onClick={onClose}
             aria-label="Close video player"
-            className="shrink-0 w-10 h-10 rounded-full bg-slate-50 border-2 border-slate-100 text-slate-400 hover:bg-rose-50 hover:border-rose-100 hover:text-rose-500 flex items-center justify-center transition-all active:scale-95"
+            className="shrink-0 w-10 h-10 rounded-full bg-slate-50 border-2 border-slate-100 text-slate-400 hover:bg-rose-50 hover:border-rose-100 hover:text-rose-50 flex items-center justify-center transition-all active:scale-95"
           >
             <X className="w-5 h-5" />
           </button>
@@ -56,6 +61,12 @@ export const TutorialPlayerModal: React.FC<TutorialPlayerModalProps> = ({ tutori
             controls
             autoPlay
             className="w-full aspect-video bg-black"
+            onLoadedMetadata={(e) => {
+              const seconds = Math.floor(e.currentTarget.duration);
+              const m = Math.floor(seconds / 60);
+              const s = seconds % 60;
+              setExactTime(`${m}:${s.toString().padStart(2, '0')}`);
+            }}
           >
             Your browser does not support video playback.
           </video>
@@ -78,7 +89,7 @@ export const TutorialPlayerModal: React.FC<TutorialPlayerModalProps> = ({ tutori
           </p>
           <div className="shrink-0 flex items-center gap-2">
             <span className="text-xs font-black text-slate-400 bg-white px-3 py-1.5 rounded-full border border-slate-100">
-              ⏱ {tutorial.duration}
+              ⏱ {exactTime || tutorial.duration}
             </span>
             <span className="text-xs font-black text-slate-400 bg-white px-3 py-1.5 rounded-full border border-slate-100">
               {tutorial.level}

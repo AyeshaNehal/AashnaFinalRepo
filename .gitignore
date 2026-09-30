@@ -112,3 +112,5 @@ ml/tests/
 # !ml/data/processed/classes.txt
 # !ml/data/processed/label_mapping.json
 # !ml/verification_results.json
+# Ignore large video files
+frontend/public/videos/*.mp4
