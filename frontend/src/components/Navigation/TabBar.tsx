@@ -10,7 +10,7 @@ interface TabBarProps {
 
 export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
   return (
-    <div className="mb-8 w-full overflow-x-auto pb-4">
+    <div className="mb-8 w-full overflow-x-auto pb-4 hide-scrollbar">
       <div className="flex items-center justify-start xl:justify-center px-4 min-w-full w-max">
         <div data-tour="tab-bar" className="bg-white/60 backdrop-blur-md p-1.5 rounded-full border-2 border-white shadow-lg shadow-teal-500/10 flex items-center gap-1">
         <button
