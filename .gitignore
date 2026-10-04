@@ -59,6 +59,7 @@ frontend/dist/
 frontend/dist-ssr/
 frontend/*.tsbuildinfo
 frontend/.vite/
+node_modules/
 
 # ============================================
 #  Frontend: Large Model Binaries (YOLO, ASL, etc.)
