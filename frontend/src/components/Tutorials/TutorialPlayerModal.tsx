@@ -56,20 +56,7 @@ export const TutorialPlayerModal: React.FC<TutorialPlayerModalProps> = ({ tutori
 
         {/* Player / placeholder */}
         {tutorial.videoUrl ? (
-          <video
-            src={tutorial.videoUrl}
-            controls
-            autoPlay
-            className="w-full aspect-video bg-black"
-            onLoadedMetadata={(e) => {
-              const seconds = Math.floor(e.currentTarget.duration);
-              const m = Math.floor(seconds / 60);
-              const s = seconds % 60;
-              setExactTime(`${m}:${s.toString().padStart(2, '0')}`);
-            }}
-          >
-            Your browser does not support video playback.
-          </video>
+          <iframe src={tutorial.videoUrl} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full aspect-video bg-black" />
         ) : (
           <div className="aspect-video bg-gradient-to-br from-lime-50 via-emerald-50 to-cyan-50 flex flex-col items-center justify-center gap-3 p-6 text-center">
             <div className="w-20 h-20 rounded-full bg-white/70 flex items-center justify-center">
@@ -100,3 +87,4 @@ export const TutorialPlayerModal: React.FC<TutorialPlayerModalProps> = ({ tutori
     </div>
   );
 };
+

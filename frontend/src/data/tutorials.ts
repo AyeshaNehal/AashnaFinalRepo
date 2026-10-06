@@ -29,7 +29,7 @@ export const tutorials: Tutorial[] = [
       'A quick walkthrough of the app: signing to the camera, watching your text build up, and speaking it aloud.',
     duration: '2:58',
     level: 'Beginner',
-    videoUrl: '/videos/Welcome To Aashna.mp4',
+    videoUrl: 'https://www.youtube.com/embed/2FlFkcJl7vM?autoplay=1',
     thumbnailUrl: '/videos/Welcome To Aashna thumbnail.png',
   },
   {
@@ -39,7 +39,7 @@ export const tutorials: Tutorial[] = [
       'Learn the correct handshapes for the ASL alphabet.',
     duration: '4:36',
     level: 'Beginner',
-    videoUrl: "/videos/Learn The ABC's.mp4",
+    videoUrl: 'https://www.youtube.com/embed/v7DSycHBhPs?autoplay=1',
     thumbnailUrl: '/videos/6c49776c-dd8a-4528-827f-a5e2d4efd570-Cover.jpg',
   },
   {
@@ -49,7 +49,7 @@ export const tutorials: Tutorial[] = [
       'How to form each number clearly, and how to switch the recognizer into Numbers mode for practice.',
     duration: '1:16',
     level: 'Beginner',
-    videoUrl: '/videos/Learn The Numbers.mp4',
+    videoUrl: 'https://www.youtube.com/embed/75RmtFBY1DA?autoplay=1',
     thumbnailUrl: '/videos/Learn The Numbers-Cover.jpg',
   },
 
@@ -61,7 +61,7 @@ export const tutorials: Tutorial[] = [
       'Practice your skills with our interactive Duolingo-style learning mode.',
     duration: '0:57',
     level: 'Intermediate',
-    videoUrl: '/videos/The Duolingo Mode.mp4',
+    videoUrl: 'https://www.youtube.com/embed/dJpX1key6W4?autoplay=1',
     thumbnailUrl: '/videos/The Duolingo Mode-Cover.jpg',
   },
   {
@@ -71,7 +71,7 @@ export const tutorials: Tutorial[] = [
       'Test your number signing speed and accuracy with this fun interactive game.',
     duration: '2:17',
     level: 'Intermediate',
-    videoUrl: '/videos/The Number Games.mp4',
+    videoUrl: 'https://www.youtube.com/embed/lGqeCI1nYgw?autoplay=1',
     thumbnailUrl: '/videos/Screenshot 2026-09-30 152617.png',
   },
   {
@@ -81,7 +81,7 @@ export const tutorials: Tutorial[] = [
       'Improve your fingerspelling speed and recognition with the Spelling Bee challenge.',
     duration: '2:15',
     level: 'Intermediate',
-    videoUrl: '/videos/The Spelling Bee Mode.mp4',
+    videoUrl: 'https://www.youtube.com/embed/sAAT96HdTT8?autoplay=1',
     thumbnailUrl: '/videos/Screenshot 2026-09-30 152841.png',
   },
   
@@ -93,7 +93,7 @@ export const tutorials: Tutorial[] = [
       'Advanced practice: signing full replies to conversational prompts in real-time.',
     duration: '0:43',
     level: 'Advanced',
-    videoUrl: '/videos/The Reply Mode.mp4',
+    videoUrl: 'https://www.youtube.com/embed/24LvgnXSmjE?autoplay=1',
     thumbnailUrl: '/videos/The Reply Mode-Cover.jpg',
   }
 ];
