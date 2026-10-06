@@ -23,8 +23,14 @@ dist-ssr/
 # Vite cache
 .vite/
 
-# Model files (large binary files – adjust if you want to keep some)
-public/models/
+# Model files (allow downloaded model files and weights)
+!public/models/
+!public/models/**
+!public/models/**/*.bin
+!public/models/**/*.json
+!public/models/**/*.tflite
+!public/models/**/*.onnx
+!public/models/**/*.yaml
 
 # OS metadata
 .DS_Store

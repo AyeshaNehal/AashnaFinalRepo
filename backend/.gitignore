@@ -37,3 +37,15 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Model files (allow downloaded model files and weights)
+!models/
+!models/**
+!*.bin
+!*.json
+!*.tflite
+!*.onnx
+!*.pt
+!*.pth
+!*.h5
+!*.keras

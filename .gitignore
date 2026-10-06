@@ -62,9 +62,10 @@ frontend/.vite/
 node_modules/
 
 # ============================================
-#  Frontend: Large Model Binaries (YOLO, ASL, etc.)
+#  Frontend: Models (Allow required model files and weights)
 # ============================================
-frontend/public/models/
+!frontend/public/models/
+!frontend/public/models/**
 
 # ============================================
 #  ML / Data Science: Large Artifacts (CRITICAL)
@@ -105,6 +106,21 @@ ml/tests/
 *.pth
 *.ckpt
 *.qoder
+
+# ============================================
+#  Model Exceptions: Allow required model files & weights
+# ============================================
+!frontend/public/models/**
+!**/models/**
+!**/models/**/*.bin
+!**/models/**/*.json
+!**/models/**/*.tflite
+!**/models/**/*.onnx
+!**/models/**/*.h5
+!**/models/**/*.keras
+!**/models/**/*.pt
+!**/models/**/*.pth
+!**/models/**/*.yaml
 
 # ============================================
 #  Keep small config files (OPTIONAL - uncomment if needed)
