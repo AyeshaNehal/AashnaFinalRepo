@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Hands, Results, HAND_CONNECTIONS } from '@mediapipe/hands';
+import type { Results } from '@mediapipe/hands';
+import * as mpHands from '@mediapipe/hands';
 import * as tf from '@tensorflow/tfjs';
 import { setPrediction, appendLetter, setCurrentHint } from '../../store/predictionSlice';
 import { predictFrame } from '../../services/modelService';
@@ -74,7 +75,7 @@ export const CameraView: React.FC = () => {
   }, [targetLetter]);
 
   useEffect(() => {
-    let hands: Hands | null = null;
+    let hands: any = null;
     let isActive = true;
     let requestRef: number;
     let isProcessing = false;
@@ -87,7 +88,8 @@ export const CameraView: React.FC = () => {
     const preCtx = preprocessCanvas.getContext('2d', { willReadFrequently: true });
 
     const setupMediaPipe = async () => {
-      hands = new Hands({
+      const HandsConstructor = mpHands.Hands || (mpHands as any).default?.Hands || (window as any).Hands;
+      hands = new HandsConstructor({
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
       });
 
@@ -206,7 +208,8 @@ export const CameraView: React.FC = () => {
           canvasCtx.strokeStyle = '#2dd4bf';
           canvasCtx.lineWidth = 2.5;
           canvasCtx.lineCap = 'round';
-          for (const [startIdx, endIdx] of HAND_CONNECTIONS) {
+          const HandConns = mpHands.HAND_CONNECTIONS || (mpHands as any).default?.HAND_CONNECTIONS;
+          for (const [startIdx, endIdx] of HandConns) {
             const a = landmarks[startIdx];
             const b = landmarks[endIdx];
             canvasCtx.beginPath();
@@ -467,3 +470,4 @@ export const CameraView: React.FC = () => {
     </div>
   );
 };
+
