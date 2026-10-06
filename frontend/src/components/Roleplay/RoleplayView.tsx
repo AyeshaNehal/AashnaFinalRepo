@@ -90,7 +90,7 @@ export const RoleplayView: React.FC = () => {
     <div className="flex flex-col gap-6 w-full h-[85vh]">
       <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 flex items-center justify-between shrink-0">
         <div className="bg-blue-100 text-blue-600 font-black px-4 py-2 rounded-xl text-lg flex items-center gap-2">
-          💬 Roleplay Mode
+          🗣️ Roleplay Mode
         </div>
         <div className="text-slate-500 font-bold">
           {progress.xp} XP
@@ -102,7 +102,7 @@ export const RoleplayView: React.FC = () => {
         <div className="w-full lg:w-[40%] flex flex-col bg-white rounded-[3rem] border-8 border-blue-100 shadow-[0_20px_50px_-12px_rgba(59,130,246,0.2)] overflow-hidden">
           
           <div className="bg-blue-50 p-6 border-b-2 border-blue-100 flex items-center gap-4 shrink-0">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm">🦉</div>
+            <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white rounded-full flex items-center justify-center text-xl lg:text-2xl shadow-sm">🤖</div>
             <div className="flex-1 min-w-0">
               <h3 className="font-black text-slate-700">Aashna Bot</h3>
               <p className="text-sm font-bold text-green-500 flex items-center gap-1">
@@ -156,9 +156,9 @@ export const RoleplayView: React.FC = () => {
               <button
                 onClick={handleSend}
                 disabled={!text.trim() || isTyping}
-                className="shrink-0 px-5 sm:px-6 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white rounded-2xl font-black transition-all duration-300 active:scale-95 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/40 disabled:shadow-none disabled:translate-y-0 flex items-center gap-2"
+                className="shrink-0 min-w-[44px] px-4 sm:px-6 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white rounded-2xl font-black transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
               >
-                Send <span className="text-xl">📤</span>
+                <span className="hidden sm:inline">Send</span> <span className="text-lg sm:text-xl">🚀</span>
               </button>
             </div>
             {error && <p className="mt-2 text-sm font-bold text-rose-500">{error}</p>}
@@ -174,3 +174,4 @@ export const RoleplayView: React.FC = () => {
     </div>
   );
 };
+

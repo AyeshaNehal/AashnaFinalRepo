@@ -27,7 +27,7 @@ export const CameraView: React.FC = () => {
   // below this threshold actively cancel the current candidate (see rejection
   // logic below), so a letter can only commit if EVERY frame in the stability
   // window exceeds this floor.  0.55 is safe because the 5-frame temporal
-  // smoothing buffer + stability ≥ 0.65 + buffer ≥ 3 frames act as a safety
+  // smoothing buffer + stability >= 0.65 + buffer >= 3 frames act as a safety
   // net that maintains precision despite slight hand rotations or misalignment.
   const CONFIDENCE_THRESHOLD = 0.55;
   // After a commit, the same letter/number is blocked for this many ms to
@@ -94,7 +94,7 @@ export const CameraView: React.FC = () => {
       hands.setOptions({
         maxNumHands: 1,
         modelComplexity: 0,
-        minDetectionConfidence: 0.4,   // lower → faster first-hand pickup
+        minDetectionConfidence: 0.4,   // lower ? faster first-hand pickup
         minTrackingConfidence: 0.5     // keep at 0.5 for stable landmark quality
       });
 
@@ -122,7 +122,7 @@ export const CameraView: React.FC = () => {
                 const imageData = preCtx.getImageData(0, 0, 640, 480);
                 const data = imageData.data;
                 
-                // Sample every 64 bytes (16 pixels × 4 channels) — 4× fewer
+                // Sample every 64 bytes (16 pixels � 4 channels) � 4� fewer
                 // iterations than the old step-16 loop; plenty for an average.
                 let totalLuminance = 0;
                 let count = 0;
@@ -202,7 +202,7 @@ export const CameraView: React.FC = () => {
           const cW = canvasRef.current.width;
           const cH = canvasRef.current.height;
 
-          // ── Pass 1: skeleton connections (drawn below dots) ──────────────
+          // -- Pass 1: skeleton connections (drawn below dots) --------------
           canvasCtx.strokeStyle = '#2dd4bf';
           canvasCtx.lineWidth = 2.5;
           canvasCtx.lineCap = 'round';
@@ -215,7 +215,7 @@ export const CameraView: React.FC = () => {
             canvasCtx.stroke();
           }
 
-          // ── Pass 2: joint dots (drawn on top of connections) ─────────────
+          // -- Pass 2: joint dots (drawn on top of connections) -------------
           for (const landmark of landmarks) {
             canvasCtx.beginPath();
             canvasCtx.arc(landmark.x * cW, landmark.y * cH, 6, 0, 2 * Math.PI);
@@ -261,12 +261,12 @@ export const CameraView: React.FC = () => {
         let prediction;
 
         if (useLandmarkRef.current) {
-          // ── Landmark model path ──────────────────────────────────────────
-          // No canvas/pixel work needed — use the already-extracted landmarks.
+          // -- Landmark model path ------------------------------------------
+          // No canvas/pixel work needed � use the already-extracted landmarks.
           // primaryHandLandmarks are the raw NormalizedLandmark objects from MediaPipe.
           prediction = await predictLandmarks(primaryHandLandmarks, modeRef.current);
         } else {
-          // ── CNN model path (default, unchanged) ──────────────────────────
+          // -- CNN model path (default, unchanged) --------------------------
           const tensor = tf.browser.fromPixels(hiddenCanvasRef.current);
           prediction   = await predictFrame(tensor, modeRef.current);
         }
@@ -275,7 +275,7 @@ export const CameraView: React.FC = () => {
 
         const now = Date.now();
 
-        // ── Temporal smoothing via confidence-weighted majority vote ────────
+        // -- Temporal smoothing via confidence-weighted majority vote --------
         // Push the current frame into a rolling buffer and score each class by
         // the sum of its confidence across the window.  This lets slightly
         // rotated / imperfect frames still contribute to a stable consensus,
@@ -300,10 +300,10 @@ export const CameraView: React.FC = () => {
             smoothedScore  = score;
           }
         }
-        // Ratio of the winner's score to the total — 1.0 means full agreement.
+        // Ratio of the winner's score to the total � 1.0 means full agreement.
         const stability = totalScore > 0 ? smoothedScore / totalScore : 0;
 
-        // Hint logic — uses raw per-frame prediction for immediate feedback.
+        // Hint logic � uses raw per-frame prediction for immediate feedback.
         if (targetLetterRef.current) {
           if (prediction.letter !== targetLetterRef.current || prediction.confidence < CONFIDENCE_THRESHOLD) {
             if (now - lastHintTimeRef.current > 400) {
@@ -319,17 +319,17 @@ export const CameraView: React.FC = () => {
           }
         }
 
-        // ── Commit gate ─────────────────────────────────────────────────────
+        // -- Commit gate -----------------------------------------------------
         // All conditions must hold:
-        //  1. Raw current-frame confidence ≥ CONFIDENCE_THRESHOLD (0.55)
-        //  2. Smoothed stability ≥ 0.65
-        //  3. Buffer has ≥ 3 frames
+        //  1. Raw current-frame confidence = CONFIDENCE_THRESHOLD (0.55)
+        //  2. Smoothed stability = 0.65
+        //  3. Buffer has = 3 frames
         //  4. Same-letter cooldown expired (allows two-digit numbers like 11)
-        //  5. Candidate has been stable for ≥ STABILITY_MS (400ms)
+        //  5. Candidate has been stable for = STABILITY_MS (400ms)
         //
         // When condition 1 fails, the current candidate is actively cancelled
         // so that the stability timer restarts from zero when confidence
-        // recovers — this prevents low-confidence letters from committing just
+        // recovers � this prevents low-confidence letters from committing just
         // because they dominated the temporal buffer across a brief dip.
         if (
           prediction.confidence >= CONFIDENCE_THRESHOLD &&
@@ -340,7 +340,7 @@ export const CameraView: React.FC = () => {
           // Time-based debounce: block the same letter only within the
           // cooldown window after the last commit.  This replaces the old
           // permanent same-letter block and allows signing two-digit numbers
-          // (e.g. "1" → "1" for 11) after the brief cooldown expires.
+          // (e.g. "1" ? "1" for 11) after the brief cooldown expires.
           const sameLetterOnCooldown =
             letter === candidateLetterRef.current &&
             (now - lastCommitTimeRef.current) < SAME_LETTER_COOLDOWN;
@@ -352,7 +352,7 @@ export const CameraView: React.FC = () => {
               candidateStartTimeRef.current = now;
               stabilityTone.start();
             } else if (now - (candidateStartTimeRef.current ?? now) >= STABILITY_MS) {
-              // ── Commit ──────────────────────────────────────────────────
+              // -- Commit --------------------------------------------------
               const durationMs = now - (candidateStartTimeRef.current ?? now);
               console.log(
                 `[commit] letter=${letter} confidence=${prediction.confidence.toFixed(3)}` +
@@ -365,7 +365,7 @@ export const CameraView: React.FC = () => {
               predictionBufferRef.current = [];
               dispatch(appendLetter(letter));
             } else {
-              // ── Candidate accumulating stability ─────────────────────────
+              // -- Candidate accumulating stability -------------------------
               const elapsed = now - (candidateStartTimeRef.current ?? now);
               console.log(
                 `[pending] letter=${letter} confidence=${prediction.confidence.toFixed(3)}` +
@@ -373,7 +373,7 @@ export const CameraView: React.FC = () => {
               );
             }
           } else {
-            // Same letter on cooldown — cancel any in-progress tone.
+            // Same letter on cooldown � cancel any in-progress tone.
             stabilityTone.cancel();
           }
 
@@ -384,7 +384,7 @@ export const CameraView: React.FC = () => {
             stabilityTone.update(progress);
           }
         } else {
-          // ── Confidence-based rejection ──────────────────────────────────────
+          // -- Confidence-based rejection --------------------------------------
           // A frame fell below the confidence threshold (or the buffer/stability
           // isn't ready).  Actively cancel the candidate so the stability timer
           // restarts from zero when high-confidence predictions resume.  This is
@@ -411,7 +411,7 @@ export const CameraView: React.FC = () => {
         console.error("Prediction error:", e);
       }
     } else {
-      // No hand detected — reset all smoothing state so the next sign starts
+      // No hand detected � reset all smoothing state so the next sign starts
       // with a clean buffer and no stale candidate.
       stabilityTone.cancel();
       lastCommitTimeRef.current       = 0;
@@ -451,13 +451,13 @@ export const CameraView: React.FC = () => {
             </div>
           </div>
 
-          {/* Active model badge — always visible so it's unambiguous during testing */}
+          {/* Active model badge � always visible so it's unambiguous during testing */}
           <div data-tour="model-badge" className={`px-4 py-2 rounded-2xl border shadow-lg text-xs font-black uppercase tracking-wider pointer-events-auto
             ${useLandmarkModel
               ? 'bg-violet-500 text-white border-violet-400 shadow-violet-500/30'
               : 'bg-white/90 text-slate-600 border-slate-100'
             }`}>
-            {useLandmarkModel ? '🤙 Landmark Model' : '🧠 CNN Model'}
+            {useLandmarkModel ? 'Landmark Model' : 'CNN Model'}
           </div>
         </div>
       </div>

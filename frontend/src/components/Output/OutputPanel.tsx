@@ -163,7 +163,7 @@ export const OutputPanel: React.FC = () => {
                 <h3 className="text-lg font-black text-slate-600">Letter Detail</h3>
                 <button
                   onClick={() => setSelectedEntry(null)}
-                  className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                  className="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
                 >
                   <X className="w-4 h-4 text-slate-500" />
                 </button>
