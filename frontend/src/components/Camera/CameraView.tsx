@@ -208,7 +208,7 @@ export const CameraView: React.FC = () => {
           canvasCtx.strokeStyle = '#2dd4bf';
           canvasCtx.lineWidth = 2.5;
           canvasCtx.lineCap = 'round';
-          const HandConns = mpHands.HAND_CONNECTIONS || (mpHands as any).default?.HAND_CONNECTIONS;
+          const HandConns = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[0,17],[17,18],[18,19],[19,20]];
           for (const [startIdx, endIdx] of HandConns) {
             const a = landmarks[startIdx];
             const b = landmarks[endIdx];
@@ -470,4 +470,5 @@ export const CameraView: React.FC = () => {
     </div>
   );
 };
+
 
