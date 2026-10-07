@@ -119,25 +119,25 @@ export const QuizView: React.FC = () => {
   const bossProgress = (bossScore / 5) * 100;
 
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-4 sm:gap-6 w-full">
       {/* Top Progress Bar */}
-      <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="bg-violet-100 text-violet-600 font-black px-4 py-2 rounded-xl text-lg flex items-center gap-2">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-sm border border-slate-100 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="bg-violet-100 text-violet-600 font-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-sm sm:text-lg flex items-center gap-2">
             ⭐ Lvl {progress.level}
           </div>
-          <div className="text-slate-500 font-bold">
+          <div className="text-slate-500 font-bold text-sm sm:text-base">
             {progress.xp} XP
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-orange-500 font-black text-xl">
-            🔥 {progress.dailyStreak} Day Streak
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="text-orange-500 font-black text-sm sm:text-xl">
+            🔥 {progress.dailyStreak} Day
           </div>
           {!isBossFight && (
-            <button 
+            <button
               onClick={startBossFight}
-              className="bg-rose-500 text-white font-bold px-4 py-2 rounded-xl shadow-md hover:bg-rose-600 active:scale-95 transition-all flex items-center gap-2"
+              className="bg-rose-500 text-white font-bold px-3 py-2 sm:px-4 sm:py-2 rounded-xl shadow-md hover:bg-rose-600 active:scale-95 transition-all flex items-center gap-1 sm:gap-2 text-xs sm:text-sm touch-target"
             >
               ⚔️ Boss Fight
             </button>
@@ -145,74 +145,74 @@ export const QuizView: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8 w-full">
-        <div className="w-full lg:w-[40%] flex flex-col gap-6">
-          <div className={`bg-white rounded-[3rem] p-8 lg:p-10 border-8 shadow-2xl relative overflow-hidden flex flex-col items-center text-center animate-float ${
+      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 w-full">
+        <div className="w-full lg:w-[40%] flex flex-col gap-4 sm:gap-6">
+          <div className={`bg-white rounded-2xl sm:rounded-[3rem] p-5 sm:p-8 lg:p-10 border-4 sm:border-8 shadow-2xl relative overflow-hidden flex flex-col items-center text-center ${
             isBossFight ? 'border-rose-100 shadow-rose-500/20' : 'border-violet-100 shadow-violet-500/20'
           }`}>
-            
+
             {bossState === 'won' ? (
-              <div className="flex flex-col items-center gap-4 my-8">
-                <div className="text-8xl animate-bounce">🏆</div>
-                <h2 className="text-3xl font-black text-rose-500">BOSS DEFEATED!</h2>
-                <div className="bg-rose-100 text-rose-700 font-bold px-6 py-4 rounded-2xl text-xl">
+              <div className="flex flex-col items-center gap-3 sm:gap-4 my-4 sm:my-8">
+                <div className="text-6xl sm:text-8xl animate-bounce">🏆</div>
+                <h2 className="text-2xl sm:text-3xl font-black text-rose-500">BOSS DEFEATED!</h2>
+                <div className="bg-rose-100 text-rose-700 font-bold px-4 py-3 sm:px-6 sm:py-4 rounded-2xl text-base sm:text-xl">
                   +100 XP Massive Bonus!
                 </div>
-                <button onClick={() => { setIsBossFight(false); setBossState('idle'); setShowSuccess(false); }} className="mt-4 bg-slate-100 text-slate-600 font-bold px-6 py-3 rounded-xl hover:bg-slate-200">
+                <button onClick={() => { setIsBossFight(false); setBossState('idle'); setShowSuccess(false); }} className="mt-3 sm:mt-4 bg-slate-100 text-slate-600 font-bold px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl hover:bg-slate-200 touch-target">
                   Return to Practice
                 </button>
               </div>
             ) : bossState === 'lost' ? (
-              <div className="flex flex-col items-center gap-4 my-8">
-                <div className="text-8xl grayscale">🦉</div>
-                <h2 className="text-3xl font-black text-slate-500">Time's Up!</h2>
+              <div className="flex flex-col items-center gap-3 sm:gap-4 my-4 sm:my-8">
+                <div className="text-6xl sm:text-8xl grayscale">🦉</div>
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-500">Time's Up!</h2>
                 <p className="font-bold text-slate-400">You ran out of time.</p>
-                <button onClick={() => { setIsBossFight(false); setBossState('idle'); setShowSuccess(false); }} className="mt-4 bg-slate-100 text-slate-600 font-bold px-6 py-3 rounded-xl hover:bg-slate-200">
+                <button onClick={() => { setIsBossFight(false); setBossState('idle'); setShowSuccess(false); }} className="mt-3 sm:mt-4 bg-slate-100 text-slate-600 font-bold px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl hover:bg-slate-200 touch-target">
                   Try Again Later
                 </button>
               </div>
             ) : (
               <>
-                <div className="w-full flex items-center justify-between mb-8 gap-4">
-                  <span className="text-3xl">{isBossFight ? '👹' : '🦉'}</span>
-                  <div className="flex-1 bg-slate-100 h-6 rounded-full overflow-hidden border-2 border-slate-200 relative">
+                <div className="w-full flex items-center justify-between mb-4 sm:mb-8 gap-3 sm:gap-4">
+                  <span className="text-2xl sm:text-3xl">{isBossFight ? '👹' : '🦉'}</span>
+                  <div className="flex-1 bg-slate-100 h-5 sm:h-6 rounded-full overflow-hidden border-2 border-slate-200 relative">
                     {isBossFight && (
-                      <div className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white mix-blend-difference z-10">
+                      <div className="absolute inset-0 flex items-center justify-center text-[9px] sm:text-[10px] font-black text-white mix-blend-difference z-10">
                         {bossTimeLeft}s LEFT
                       </div>
                     )}
-                    <div 
+                    <div
                       className={`${isBossFight ? 'bg-rose-400' : 'bg-green-400'} h-full rounded-full transition-all duration-500 ease-out flex items-center justify-end px-2`}
                       style={{ width: `${Math.max(isBossFight ? bossProgress : streakProgress, 5)}%` }}
                     >
                       <div className="w-4 h-2 bg-white/40 rounded-full" />
                     </div>
                   </div>
-                  <span className="text-xl font-bold text-slate-400">
+                  <span className="text-base sm:text-xl font-bold text-slate-400">
                     {isBossFight ? `${bossScore}/5` : `Combo ${streak}`}
                   </span>
                 </div>
 
-                <h2 className="text-2xl font-black text-slate-600 mb-2">Can you sign...</h2>
-                
-                <div className={`text-9xl font-black my-8 transition-all duration-300 ${
+                <h2 className="text-xl sm:text-2xl font-black text-slate-600 mb-2">Can you sign...</h2>
+
+                <div className={`text-7xl sm:text-9xl font-black my-4 sm:my-8 transition-all duration-300 ${
                   showSuccess ? 'text-green-500 scale-125 rotate-12' : (isBossFight ? 'text-rose-600' : 'text-violet-600')
                 }`}>
                   {targetLetter}
                 </div>
 
                 {showSuccess ? (
-                  <div className="bg-green-100 border-4 border-green-200 text-green-700 font-bold px-6 py-4 rounded-2xl w-full animate-bounce text-lg flex justify-between items-center">
+                  <div className="bg-green-100 border-4 border-green-200 text-green-700 font-bold px-4 py-3 sm:px-6 sm:py-4 rounded-2xl w-full animate-bounce text-base sm:text-lg flex justify-between items-center">
                     <span>🎉 Perfect!</span>
-                    {!isBossFight && <span className="text-xl">+{earnedXp} XP</span>}
+                    {!isBossFight && <span className="text-lg sm:text-xl">+{earnedXp} XP</span>}
                   </div>
                 ) : (currentHint && !isBossFight) ? (
-                  <div className="bg-orange-50 border-4 border-orange-200 text-orange-700 font-bold px-6 py-4 rounded-2xl w-full animate-pulse text-lg flex flex-col gap-2">
-                    <span className="text-sm uppercase tracking-wider text-orange-500">AI Feedback</span>
+                  <div className="bg-orange-50 border-4 border-orange-200 text-orange-700 font-bold px-4 py-3 sm:px-6 sm:py-4 rounded-2xl w-full animate-pulse text-sm sm:text-lg flex flex-col gap-2">
+                    <span className="text-xs sm:text-sm uppercase tracking-wider text-orange-500">AI Feedback</span>
                     <span>{currentHint}</span>
                   </div>
                 ) : (
-                  <div className={`${isBossFight ? 'bg-rose-50 border-rose-100 text-rose-600' : 'bg-violet-50 border-violet-100 text-violet-600'} border-4 font-bold px-6 py-4 rounded-2xl w-full text-lg`}>
+                  <div className={`${isBossFight ? 'bg-rose-50 border-rose-100 text-rose-600' : 'bg-violet-50 border-violet-100 text-violet-600'} border-4 font-bold px-4 py-3 sm:px-6 sm:py-4 rounded-2xl w-full text-sm sm:text-lg`}>
                     {isBossFight ? `Quick! ${bossTimeLeft} seconds left!` : 'Show the letter to the camera!'}
                   </div>
                 )}
@@ -220,7 +220,7 @@ export const QuizView: React.FC = () => {
             )}
           </div>
         </div>
-        
+
         <div className="w-full lg:w-[60%]">
           <CameraView />
         </div>

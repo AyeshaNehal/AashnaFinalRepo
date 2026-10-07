@@ -183,7 +183,7 @@ export const ReplyPlaybackView: React.FC = () => {
       </div>
 
       {/* ── Input card ────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-[2rem] border-2 border-slate-100 p-6 shadow-sm mb-6">
+      <div className="bg-white rounded-[2rem] border-2 border-slate-100 p-4 sm:p-6 shadow-sm mb-4 sm:mb-6">
         <label
           htmlFor="reply-input"
           className="block text-sm font-bold text-slate-500 mb-2"
@@ -196,7 +196,7 @@ export const ReplyPlaybackView: React.FC = () => {
           onChange={handleInputChange}
           placeholder="e.g. Hello, how are you today?"
           rows={3}
-          className="w-full resize-none border-2 border-slate-100 rounded-2xl p-4 text-lg font-medium text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-sky-300 transition-colors"
+          className="w-full resize-none border-2 border-slate-100 rounded-2xl p-3 sm:p-4 text-base font-medium text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-sky-300 transition-colors"
         />
         <div className="mt-2 text-xs text-slate-400">
           {letterCount > 0
@@ -206,14 +206,14 @@ export const ReplyPlaybackView: React.FC = () => {
       </div>
 
       {/* ── Controls row ──────────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
         {/* Play / Pause / Replay */}
         <button
           onClick={handlePlay}
           disabled={!canStart && !started}
-          className="px-8 py-4 bg-gradient-to-r from-sky-400 to-indigo-400 text-white font-black rounded-[1.5rem] shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md flex items-center gap-2"
+          className="px-5 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-sky-400 to-indigo-400 text-white font-black rounded-[1.5rem] shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-md flex items-center gap-2 touch-target"
         >
-          <span className="text-xl">
+          <span className="text-lg sm:text-xl">
             {hasFinished ? '🔄' : isPlaying ? '⏸' : '▶️'}
           </span>
           <span>
@@ -231,15 +231,15 @@ export const ReplyPlaybackView: React.FC = () => {
         {started && (
           <button
             onClick={handleRestart}
-            className="px-6 py-4 bg-white border-2 border-slate-100 text-slate-600 font-bold rounded-[1.5rem] hover:bg-slate-50 hover:border-slate-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200"
+            className="px-4 sm:px-6 py-3 sm:py-4 bg-white border-2 border-slate-100 text-slate-600 font-bold rounded-[1.5rem] hover:bg-slate-50 hover:border-slate-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 touch-target"
           >
             ↩ Restart
           </button>
         )}
 
         {/* Speed pills */}
-        <div className="flex items-center gap-1.5 ml-auto bg-slate-50 rounded-full p-1.5 border border-slate-100">
-          <span className="text-xs font-bold text-slate-400 px-2 hidden sm:inline">
+        <div className="flex items-center gap-1 sm:gap-1.5 ml-auto bg-slate-50 rounded-full p-1 sm:p-1.5 border border-slate-100">
+          <span className="text-xs font-bold text-slate-400 px-1 sm:px-2 hidden sm:inline">
             Speed
           </span>
           {SPEED_OPTIONS.map((opt) => (
@@ -247,13 +247,13 @@ export const ReplyPlaybackView: React.FC = () => {
               key={opt.label}
               onClick={() => setSpeedFactor(opt.factor)}
               title={`~${Math.round(BASE_INTERVAL_MS * opt.factor)}ms per letter`}
-              className={`px-3 py-1.5 rounded-full text-xs font-black transition-all ${
+              className={`px-2 sm:px-3 py-1.5 rounded-full text-xs font-black transition-all ${
                 speedFactor === opt.factor
                   ? 'bg-sky-500 text-white shadow-sm'
                   : 'text-slate-500 hover:bg-white'
               }`}
             >
-              {opt.emoji} {opt.label}
+              {opt.emoji} <span className="hidden sm:inline">{opt.label}</span>
             </button>
           ))}
         </div>
@@ -261,12 +261,12 @@ export const ReplyPlaybackView: React.FC = () => {
 
       {/* ── Playback area ─────────────────────────────────────────────────── */}
       {started && currentItem ? (
-        <div className="bg-gradient-to-br from-sky-50 to-indigo-50 rounded-[2rem] border-2 border-sky-100 p-8 shadow-sm">
+        <div className="bg-gradient-to-br from-sky-50 to-indigo-50 rounded-[2rem] border-2 border-sky-100 p-4 sm:p-8 shadow-sm">
           {/* Letter image */}
-          <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 mx-auto rounded-[2rem] bg-white shadow-lg border-2 border-white overflow-hidden flex items-center justify-center">
+          <div className="relative w-36 h-36 sm:w-48 sm:h-48 md:w-64 md:h-64 mx-auto rounded-[2rem] bg-white shadow-lg border-2 border-white overflow-hidden flex items-center justify-center">
             {failedImages.has(currentItem.letter) ? (
               <div className="flex flex-col items-center gap-2">
-                <span className="text-7xl font-black text-slate-300 select-none">
+                <span className="text-5xl sm:text-7xl font-black text-slate-300 select-none">
                   {currentItem.letter}
                 </span>
                 <span className="text-xs text-slate-400">No image available</span>
@@ -286,7 +286,7 @@ export const ReplyPlaybackView: React.FC = () => {
 
           {/* Current word: letter pills with the active letter highlighted */}
           {currentWordIndex >= 0 && words[currentWordIndex] && (
-            <div className="mt-8 flex flex-col items-center gap-3">
+            <div className="mt-4 sm:mt-8 flex flex-col items-center gap-3">
               <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Spelling
               </div>
@@ -298,7 +298,7 @@ export const ReplyPlaybackView: React.FC = () => {
                     <span
                       key={i}
                       className={`
-                        px-2.5 py-1.5 rounded-lg text-lg sm:text-xl font-black
+                        px-2 sm:px-2.5 py-1.5 rounded-lg text-base sm:text-xl font-black
                         transition-all duration-200
                         ${
                           isCurrent
@@ -336,7 +336,7 @@ export const ReplyPlaybackView: React.FC = () => {
           )}
 
           {/* Progress bar */}
-          <div className="mt-8">
+          <div className="mt-4 sm:mt-8">
             <div className="h-2 bg-white/60 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-sky-400 to-indigo-400 rounded-full transition-all duration-300 ease-out"
@@ -350,19 +350,19 @@ export const ReplyPlaybackView: React.FC = () => {
         </div>
       ) : (
         /* ── Welcome state ─────────────────────────────────────────────── */
-        <div className="bg-gradient-to-br from-sky-50 to-indigo-50 rounded-[2rem] border-2 border-sky-100 p-12 shadow-sm text-center">
-          <div className="text-6xl mb-4 select-none">⌨️</div>
-          <h2 className="text-2xl font-black text-slate-700 mb-2">
+        <div className="bg-gradient-to-br from-sky-50 to-indigo-50 rounded-[2rem] border-2 border-sky-100 p-6 sm:p-12 shadow-sm text-center">
+          <div className="text-5xl sm:text-6xl mb-4 select-none">⌨️</div>
+          <h2 className="text-xl sm:text-2xl font-black text-slate-700 mb-2">
             Reply Mode
           </h2>
-          <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
+          <p className="text-slate-500 max-w-md mx-auto leading-relaxed text-sm sm:text-base">
             Type a message above and press{' '}
             <strong className="text-slate-700">Play</strong> to watch it played
             back as a sequence of ASL letter images — so a deaf person can see
             what you typed, letter by letter.
           </p>
           {canStart && (
-            <p className="mt-4 text-sky-600 font-bold">
+            <p className="mt-4 text-sky-600 font-bold text-sm sm:text-base">
               {letterCount} letter{letterCount !== 1 ? 's' : ''} ready — press
               Play to start!
             </p>

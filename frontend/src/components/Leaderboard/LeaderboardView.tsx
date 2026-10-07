@@ -66,21 +66,21 @@ export const LeaderboardView: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col gap-6">
-      
-      <div className="bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-[2rem] p-8 text-white shadow-xl flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-black mb-2 flex items-center gap-3">
-            <span>🏆</span> Global Leaderboard
+    <div className="w-full max-w-4xl mx-auto flex flex-col gap-4 sm:gap-6">
+
+      <div className="bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-2xl sm:rounded-[2rem] p-5 sm:p-8 text-white shadow-xl flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-4xl font-black mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3">
+            <span>🏆</span> <span className="truncate">Global Leaderboard</span>
           </h1>
-          <p className="text-violet-100 font-bold text-lg">
-            Compete with other ASL learners around the world!
+          <p className="text-violet-100 font-bold text-sm sm:text-lg">
+            Compete with ASL learners worldwide!
           </p>
         </div>
-        <div className="text-7xl opacity-80 animate-bounce">🌎</div>
+        <div className="text-4xl sm:text-7xl opacity-80 shrink-0">🌎</div>
       </div>
 
-      <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] p-4 lg:p-8 border-4 border-white shadow-[0_20px_50px_-12px_rgba(139,92,246,0.1)]">
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl sm:rounded-[2rem] p-3 sm:p-4 lg:p-8 border-4 border-white shadow-[0_20px_50px_-12px_rgba(139,92,246,0.1)]">
         {loading ? (
           <div className="w-full py-12 flex justify-center items-center flex-col gap-4">
             <div className="w-12 h-12 border-4 border-violet-200 border-t-violet-500 rounded-full animate-spin"></div>
@@ -91,7 +91,7 @@ export const LeaderboardView: React.FC = () => {
             <p className="text-rose-500 font-bold">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="mt-4 bg-violet-500 text-white font-bold px-4 py-2 rounded-xl hover:bg-violet-600"
+              className="mt-4 bg-violet-500 text-white font-bold px-4 py-2 rounded-xl hover:bg-violet-600 touch-target"
             >
               Retry
             </button>
@@ -101,42 +101,42 @@ export const LeaderboardView: React.FC = () => {
             No one is on the leaderboard yet! Be the first!
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2 sm:gap-3">
             {users.map((user, index) => {
               const isMe = auth.currentUser?.uid === user.id;
-              
+
               return (
-                <div 
+                <div
                   key={user.id}
-                  className={`flex items-center gap-4 lg:gap-6 p-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
-                    isMe 
-                      ? 'bg-violet-50 border-2 border-violet-300 shadow-md' 
+                  className={`flex items-center gap-3 sm:gap-4 lg:gap-6 p-3 sm:p-4 rounded-xl sm:rounded-2xl transition-all duration-300 ${
+                    isMe
+                      ? 'bg-violet-50 border-2 border-violet-300 shadow-md'
                       : 'bg-slate-50 border-2 border-transparent hover:border-slate-200'
                   }`}
                 >
-                  <div className="w-12 flex justify-center items-center">
+                  <div className="w-8 sm:w-12 flex justify-center items-center shrink-0">
                     {getRankBadge(index)}
                   </div>
-                  
-                  <div className="flex-1 flex flex-col">
-                    <span className="font-black text-slate-700 text-lg flex items-center gap-2">
-                      {user.email.split('@')[0]}
-                      {isMe && <span className="bg-violet-500 text-white text-[10px] uppercase px-2 py-1 rounded-full">You</span>}
+
+                  <div className="flex-1 flex flex-col min-w-0">
+                    <span className="font-black text-slate-700 text-sm sm:text-lg flex items-center gap-1 sm:gap-2 truncate">
+                      <span className="truncate">{user.email.split('@')[0]}</span>
+                      {isMe && <span className="bg-violet-500 text-white text-[9px] sm:text-[10px] uppercase px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full shrink-0">You</span>}
                     </span>
-                    <span className="text-slate-400 font-bold text-sm">
+                    <span className="text-slate-400 font-bold text-xs sm:text-sm">
                       Level {user.level}
                     </span>
                   </div>
-                  
-                  <div className="flex items-center gap-6">
-                    <div className="flex flex-col items-end hidden sm:flex">
-                      <span className="text-sm font-black text-orange-400 uppercase tracking-wider">Streak</span>
-                      <span className="font-bold text-slate-600">🔥 {user.dailyStreak}</span>
+
+                  <div className="flex items-center gap-3 sm:gap-6 shrink-0">
+                    <div className="flex-col items-end hidden sm:flex">
+                      <span className="text-xs font-black text-orange-400 uppercase tracking-wider">Streak</span>
+                      <span className="font-bold text-slate-600 text-sm">🔥 {user.dailyStreak}</span>
                     </div>
-                    
-                    <div className="flex flex-col items-end w-24">
-                      <span className="text-sm font-black text-violet-400 uppercase tracking-wider">XP</span>
-                      <span className="font-black text-violet-600 text-xl">{user.xp}</span>
+
+                    <div className="flex flex-col items-end">
+                      <span className="text-[0.6rem] sm:text-sm font-black text-violet-400 uppercase tracking-wider">XP</span>
+                      <span className="font-black text-violet-600 text-base sm:text-xl">{user.xp}</span>
                     </div>
                   </div>
                 </div>

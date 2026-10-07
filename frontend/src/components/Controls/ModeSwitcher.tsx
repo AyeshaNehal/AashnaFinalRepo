@@ -24,7 +24,7 @@ export const ModeSwitcher: React.FC = () => {
   }
 
   return (
-    <div data-tour="mode-switcher" className="flex bg-white/60 backdrop-blur-md p-2 rounded-3xl border border-white/50 shadow-sm w-full md:w-max mx-auto lg:mx-0">
+    <div data-tour="mode-switcher" className="flex bg-white/60 backdrop-blur-md p-1.5 rounded-2xl sm:rounded-3xl border border-white/50 shadow-sm w-full">
       {modes.map((mode) => {
         const isActive = currentMode === mode.id;
         return (
@@ -32,9 +32,9 @@ export const ModeSwitcher: React.FC = () => {
             key={mode.id}
             onClick={() => dispatch(setSignMode(mode.id))}
             className={`
-              flex-1 flex items-center justify-center gap-2 py-3 px-5 rounded-2xl text-sm font-bold transition-all duration-300 whitespace-nowrap
-              ${isActive 
-                ? 'bg-gradient-to-r from-teal-400 to-cyan-500 text-white shadow-lg shadow-teal-500/30' 
+              flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 px-3 sm:px-5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap touch-target
+              ${isActive
+                ? 'bg-gradient-to-r from-teal-400 to-cyan-500 text-white shadow-lg shadow-teal-500/30'
                 : 'text-slate-800 hover:text-teal-700 hover:bg-white/90 shadow-sm hover:shadow-md'}
             `}
           >

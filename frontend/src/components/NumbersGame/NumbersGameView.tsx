@@ -460,16 +460,16 @@ export const NumbersGameView: React.FC = () => {
   return (
     <div className="flex flex-col gap-6 w-full">
       {/* ── Top Bar ──────────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="bg-cyan-100 text-cyan-600 font-black px-4 py-2 rounded-xl text-lg flex items-center gap-2">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-sm border border-slate-100 flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="bg-cyan-100 text-cyan-600 font-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-sm sm:text-lg flex items-center gap-2">
             ⭐ Lvl {progress.level}
           </div>
-          <div className="text-slate-500 font-bold">{progress.xp} XP</div>
+          <div className="text-slate-500 font-bold text-sm sm:text-base">{progress.xp} XP</div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-orange-500 font-black text-xl">🔥 {progress.dailyStreak} Day Streak</div>
-          <div className="bg-cyan-50 text-cyan-600 font-black px-4 py-2 rounded-xl shadow-inner border-2 border-cyan-100">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="text-orange-500 font-black text-sm sm:text-xl">🔥 {progress.dailyStreak} Day</div>
+          <div className="bg-cyan-50 text-cyan-600 font-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl shadow-inner border-2 border-cyan-100 text-xs sm:text-sm">
             {gameMode === 'counting' ? `Counting · Lvl ${level}` : 'Math Challenge'}
           </div>
         </div>
@@ -621,13 +621,13 @@ export const NumbersGameView: React.FC = () => {
       )}
 
       {/* ── Main game area ──────────────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row gap-8 w-full">
-        <div className="w-full lg:w-[40%] flex flex-col gap-6">
-          <div className="bg-white rounded-[3rem] p-8 lg:p-10 border-8 border-cyan-100 shadow-2xl shadow-cyan-500/20 relative overflow-hidden flex flex-col items-center text-center animate-float">
+      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 w-full">
+        <div className="w-full lg:w-[40%] flex flex-col gap-4 sm:gap-6">
+          <div className="bg-white rounded-2xl sm:rounded-[3rem] p-5 sm:p-8 lg:p-10 border-4 sm:border-8 border-cyan-100 shadow-2xl shadow-cyan-500/20 relative overflow-hidden flex flex-col items-center text-center">
 
-            <div className="w-full flex items-center justify-center mb-8 gap-4">
-              <span className="text-4xl">🦉</span>
-              <h2 className="text-2xl font-black text-slate-600">{getLevelTitle()}</h2>
+            <div className="w-full flex items-center justify-center mb-4 sm:mb-8 gap-3 sm:gap-4">
+              <span className="text-3xl sm:text-4xl">🦉</span>
+              <h2 className="text-xl sm:text-2xl font-black text-slate-600">{getLevelTitle()}</h2>
             </div>
 
             {/* ── Level 1: Counting display ──────────────────────────────────── */}
@@ -655,7 +655,7 @@ export const NumbersGameView: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                <div className={`text-[10rem] leading-none font-black my-4 transition-all duration-300 ${
+                <div className={`text-[5rem] sm:text-[7rem] lg:text-[10rem] leading-none font-black my-4 transition-all duration-300 ${
                   showSuccess ? 'text-green-500 scale-125 rotate-12' : 'text-cyan-500'
                 }`}>
                   {targetNumber}

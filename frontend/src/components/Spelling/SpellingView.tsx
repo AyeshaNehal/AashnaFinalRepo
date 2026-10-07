@@ -144,11 +144,11 @@ export const SpellingView: React.FC = () => {
   const displayChars = targetWord.split('');
 
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-4 sm:gap-6 w-full">
       {/* ── Header bar ─────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-100 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="bg-fuchsia-100 text-fuchsia-600 font-black px-4 py-2 rounded-xl text-lg flex items-center gap-2">
+      <div className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-sm border border-slate-100 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <div className="bg-fuchsia-100 text-fuchsia-600 font-black px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-sm sm:text-lg flex items-center gap-2">
             🐝 Spelling Bee
           </div>
 
@@ -156,7 +156,7 @@ export const SpellingView: React.FC = () => {
           <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
             <button
               onClick={() => { setMode('words'); setStreakInTier(0); }}
-              className={`px-4 py-1.5 rounded-lg font-bold text-sm transition-all ${
+              className={`px-3 py-1.5 sm:px-4 rounded-lg font-bold text-xs sm:text-sm transition-all touch-target ${
                 mode === 'words'
                   ? 'bg-fuchsia-500 text-white shadow-sm'
                   : 'text-slate-500 hover:text-fuchsia-600'
@@ -166,7 +166,7 @@ export const SpellingView: React.FC = () => {
             </button>
             <button
               onClick={() => setMode('phrases')}
-              className={`px-4 py-1.5 rounded-lg font-bold text-sm transition-all ${
+              className={`px-3 py-1.5 sm:px-4 rounded-lg font-bold text-xs sm:text-sm transition-all touch-target ${
                 mode === 'phrases'
                   ? 'bg-fuchsia-500 text-white shadow-sm'
                   : 'text-slate-500 hover:text-fuchsia-600'
@@ -177,14 +177,14 @@ export const SpellingView: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Tier badge (words mode) or category name (phrases mode) */}
           {mode === 'words' ? (
-            <div className={`${tierColor.bg} ${tierColor.text} font-black px-3 py-1.5 rounded-xl text-sm flex items-center gap-2`}>
+            <div className={`${tierColor.bg} ${tierColor.text} font-black px-2.5 py-1.5 sm:px-3 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2`}>
               <span>{tier.label}</span>
               {streakInTier > 0 && (
-                <span className="text-xs opacity-70">
-                  {streakInTier}/{WORDS_TO_ADVANCE} to next
+                <span className="text-[0.6rem] sm:text-xs opacity-70">
+                  {streakInTier}/{WORDS_TO_ADVANCE}
                 </span>
               )}
             </div>
@@ -192,7 +192,7 @@ export const SpellingView: React.FC = () => {
             <select
               value={activeCategory}
               onChange={(e) => setActiveCategory(e.target.value as PhraseCategory)}
-              className="bg-violet-100 text-violet-700 font-bold px-3 py-1.5 rounded-xl text-sm border-none outline-none cursor-pointer"
+              className="bg-violet-100 text-violet-700 font-bold px-2.5 py-1.5 sm:px-3 rounded-xl text-xs sm:text-sm border-none outline-none cursor-pointer"
             >
               {phraseCategories.map((c) => (
                 <option key={c.category} value={c.category}>
@@ -201,39 +201,38 @@ export const SpellingView: React.FC = () => {
               ))}
             </select>
           )}
-          <div className="text-slate-500 font-bold">{progress.xp} XP</div>
+          <div className="text-slate-500 font-bold text-sm sm:text-base">{progress.xp} XP</div>
         </div>
       </div>
 
       {/* ── Tier description (words mode, subtle) ──────────────────────────── */}
       {mode === 'words' && (
-        <p className="text-sm text-slate-400 font-bold text-center -mt-2">
+        <p className="text-xs sm:text-sm text-slate-400 font-bold text-center -mt-1 sm:-mt-2">
           {tier.description}
         </p>
       )}
 
       {/* ── Main card + camera ─────────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row gap-8 w-full">
-        <div className="w-full lg:w-[40%] flex flex-col gap-6">
-          <div className="bg-white rounded-[3rem] p-8 lg:p-10 border-8 border-fuchsia-100 shadow-[0_20px_50px_-12px_rgba(217,70,239,0.2)] relative overflow-hidden flex flex-col items-center text-center animate-float">
+      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 w-full">
+        <div className="w-full lg:w-[40%] flex flex-col gap-4 sm:gap-6">
+          <div className="bg-white rounded-2xl sm:rounded-[3rem] p-5 sm:p-8 lg:p-10 border-4 sm:border-8 border-fuchsia-100 shadow-[0_20px_50px_-12px_rgba(217,70,239,0.2)] relative overflow-hidden flex flex-col items-center text-center">
 
-            <h2 className="text-2xl font-black text-slate-600 mb-8">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-600 mb-4 sm:mb-8">
               {mode === 'phrases' ? 'Can you sign...' : 'Can you spell...'}
             </h2>
 
             {/* Letter tiles */}
-            <div className="flex justify-center gap-2 mb-12 flex-wrap">
+            <div className="flex justify-center gap-1.5 sm:gap-2 mb-6 sm:mb-12 flex-wrap">
               {displayChars.map((char, idx) => {
                 if (char === ' ') {
-                  // Render spaces as a narrow invisible gap
-                  return <div key={idx} className="w-4" />;
+                  return <div key={idx} className="w-3 sm:w-4" />;
                 }
                 return (
                   <div
                     key={idx}
-                    className={`w-14 h-18 md:w-16 md:h-20 rounded-2xl flex items-center justify-center text-4xl md:text-5xl font-black transition-all duration-300 ${
+                    className={`w-10 h-12 sm:w-14 sm:h-18 md:w-16 md:h-20 rounded-xl sm:rounded-2xl flex items-center justify-center text-2xl sm:text-4xl md:text-5xl font-black transition-all duration-300 ${
                       idx < currentLetterIdx
-                        ? 'bg-green-500 text-white shadow-lg transform -translate-y-2'
+                        ? 'bg-green-500 text-white shadow-lg transform -translate-y-1 sm:-translate-y-2'
                         : idx === currentLetterIdx
                           ? 'bg-fuchsia-100 text-fuchsia-600 border-4 border-fuchsia-300 transform scale-110'
                           : 'bg-slate-50 text-slate-300 border-4 border-slate-100'
@@ -246,19 +245,19 @@ export const SpellingView: React.FC = () => {
             </div>
 
             {showSuccess ? (
-              <div className="bg-green-100 border-4 border-green-200 text-green-700 font-bold px-6 py-4 rounded-2xl w-full animate-bounce text-lg flex flex-col items-center gap-1">
+              <div className="bg-green-100 border-4 border-green-200 text-green-700 font-bold px-4 py-3 sm:px-6 sm:py-4 rounded-2xl w-full animate-bounce text-sm sm:text-lg flex flex-col items-center gap-1">
                 <span>🎉 {mode === 'phrases' ? 'Perfect Phrase!' : 'Perfect Spelling!'}</span>
-                <span className="text-xl">+{30 + targetWord.replace(/ /g, '').length * 5 + tierIdx * 10} XP</span>
+                <span className="text-base sm:text-xl">+{30 + targetWord.replace(/ /g, '').length * 5 + tierIdx * 10} XP</span>
                 {mode === 'words' && streakInTier >= WORDS_TO_ADVANCE && tierIdx < spellingTiers.length - 1 && (
-                  <span className="text-sm font-black text-violet-600 mt-1">
+                  <span className="text-xs sm:text-sm font-black text-violet-600 mt-1">
                     ⬆️ Promoted to {spellingTiers[tierIdx + 1].label}!
                   </span>
                 )}
               </div>
             ) : (
-              <div className="bg-fuchsia-50 border-4 border-fuchsia-100 text-fuchsia-600 font-bold px-6 py-4 rounded-2xl w-full text-lg">
+              <div className="bg-fuchsia-50 border-4 border-fuchsia-100 text-fuchsia-600 font-bold px-4 py-3 sm:px-6 sm:py-4 rounded-2xl w-full text-sm sm:text-lg">
                 Sign the letter{' '}
-                <span className="font-black text-2xl mx-1">
+                <span className="font-black text-xl sm:text-2xl mx-1">
                   {targetWord[currentLetterIdx] === ' '
                     ? targetWord[currentLetterIdx + 1] ?? ''
                     : targetWord[currentLetterIdx]}

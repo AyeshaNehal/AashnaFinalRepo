@@ -90,13 +90,13 @@ export const CameraView: React.FC = () => {
     const setupMediaPipe = async () => {
       const HandsConstructor = mpHands.Hands || (mpHands as any).default?.Hands || (window as any).Hands;
       hands = new HandsConstructor({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
       });
 
       hands.setOptions({
         maxNumHands: 1,
         modelComplexity: 0,
-        minDetectionConfidence: 0.4,   // lower ? faster first-hand pickup
+        minDetectionConfidence: 0.4,   // lower â†’ faster first-hand pickup
         minTrackingConfidence: 0.5     // keep at 0.5 for stable landmark quality
       });
 
@@ -124,7 +124,7 @@ export const CameraView: React.FC = () => {
                 const imageData = preCtx.getImageData(0, 0, 640, 480);
                 const data = imageData.data;
                 
-                // Sample every 64 bytes (16 pixels × 4 channels) — 4× fewer
+                // Sample every 64 bytes (16 pixels Ã— 4 channels) â€” 4Ã— fewer
                 // iterations than the old step-16 loop; plenty for an average.
                 let totalLuminance = 0;
                 let count = 0;
@@ -265,7 +265,7 @@ export const CameraView: React.FC = () => {
 
         if (useLandmarkRef.current) {
           // -- Landmark model path ------------------------------------------
-          // No canvas/pixel work needed — use the already-extracted landmarks.
+          // No canvas/pixel work needed ï¿½ use the already-extracted landmarks.
           // primaryHandLandmarks are the raw NormalizedLandmark objects from MediaPipe.
           prediction = await predictLandmarks(primaryHandLandmarks, modeRef.current);
         } else {
@@ -303,10 +303,10 @@ export const CameraView: React.FC = () => {
             smoothedScore  = score;
           }
         }
-        // Ratio of the winner's score to the total — 1.0 means full agreement.
+        // Ratio of the winner's score to the total ï¿½ 1.0 means full agreement.
         const stability = totalScore > 0 ? smoothedScore / totalScore : 0;
 
-        // Hint logic — uses raw per-frame prediction for immediate feedback.
+        // Hint logic ï¿½ uses raw per-frame prediction for immediate feedback.
         if (targetLetterRef.current) {
           if (prediction.letter !== targetLetterRef.current || prediction.confidence < CONFIDENCE_THRESHOLD) {
             if (now - lastHintTimeRef.current > 400) {
@@ -332,7 +332,7 @@ export const CameraView: React.FC = () => {
         //
         // When condition 1 fails, the current candidate is actively cancelled
         // so that the stability timer restarts from zero when confidence
-        // recovers — this prevents low-confidence letters from committing just
+        // recovers ï¿½ this prevents low-confidence letters from committing just
         // because they dominated the temporal buffer across a brief dip.
         if (
           prediction.confidence >= CONFIDENCE_THRESHOLD &&
@@ -376,7 +376,7 @@ export const CameraView: React.FC = () => {
               );
             }
           } else {
-            // Same letter on cooldown — cancel any in-progress tone.
+            // Same letter on cooldown ï¿½ cancel any in-progress tone.
             stabilityTone.cancel();
           }
 
@@ -414,7 +414,7 @@ export const CameraView: React.FC = () => {
         console.error("Prediction error:", e);
       }
     } else {
-      // No hand detected — reset all smoothing state so the next sign starts
+      // No hand detected ï¿½ reset all smoothing state so the next sign starts
       // with a clean buffer and no stale candidate.
       stabilityTone.cancel();
       lastCommitTimeRef.current       = 0;
@@ -430,45 +430,47 @@ export const CameraView: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-4 relative animate-float">
-      <div data-tour="camera-view" className="relative w-full aspect-video bg-white rounded-[3rem] overflow-hidden border-8 border-teal-100 shadow-[0_20px_50px_-12px_rgba(20,184,166,0.3)] flex items-center justify-center transform transition-transform hover:scale-[1.01]">
+    <div className="w-full flex flex-col gap-3 sm:gap-4 relative">
+      <div
+        data-tour="camera-view"
+        className="relative w-full aspect-video bg-white rounded-2xl sm:rounded-[3rem] overflow-hidden border-4 sm:border-8 border-teal-100 shadow-[0_10px_30px_-8px_rgba(20,184,166,0.25)] sm:shadow-[0_20px_50px_-12px_rgba(20,184,166,0.3)] flex items-center justify-center"
+      >
         {!isReady && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 gap-6 bg-slate-50/80 backdrop-blur-sm z-10">
-            <div className="w-12 h-12 border-4 border-teal-400 border-t-transparent rounded-full animate-spin shadow-lg"></div>
-            <p className="font-bold text-lg tracking-wide text-slate-600">Starting Camera...</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 gap-4 sm:gap-6 bg-slate-50/80 backdrop-blur-sm z-10">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-teal-400 border-t-transparent rounded-full animate-spin shadow-lg"></div>
+            <p className="font-bold text-base sm:text-lg tracking-wide text-slate-600">Starting Camera...</p>
           </div>
         )}
-        
+
         <video ref={videoRef} className="hidden" playsInline />
-        <canvas ref={canvasRef} width={640} height={480} className="w-full h-full object-cover rounded-[1.5rem]" />
+        <canvas ref={canvasRef} width={640} height={480} className="w-full h-full object-cover rounded-xl sm:rounded-[1.5rem]" />
         <canvas ref={hiddenCanvasRef} width={64} height={64} className="hidden" />
 
-        <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end pointer-events-none">
+        {/* Status overlays */}
+        <div className="absolute bottom-3 sm:bottom-6 left-3 sm:left-6 right-3 sm:right-6 flex justify-between items-end pointer-events-none gap-2">
           {/* Camera status */}
-          <div className="bg-white/90 backdrop-blur-md px-5 py-3 rounded-2xl border border-slate-100 shadow-xl pointer-events-auto">
-            <div className="flex items-center gap-3">
-              <div className={`w-3 h-3 rounded-full ${isReady ? 'bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]' : 'bg-slate-300'}`}></div>
-              <span className="text-sm font-black text-slate-600 uppercase tracking-wider">
-                {isReady ? 'Camera Live' : 'Connecting'}
+          <div className="bg-white/90 backdrop-blur-md px-3 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-100 shadow-xl pointer-events-auto shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full shrink-0 ${isReady ? 'bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]' : 'bg-slate-300'}`}></div>
+              <span className="text-xs sm:text-sm font-black text-slate-600 uppercase tracking-wider">
+                {isReady ? 'Live' : 'Connecting'}
               </span>
             </div>
           </div>
 
-          {/* Active model badge — always visible so it's unambiguous during testing */}
-          <div data-tour="model-badge" className={`px-4 py-2 rounded-2xl border shadow-lg text-xs font-black uppercase tracking-wider pointer-events-auto
-            ${useLandmarkModel
-              ? 'bg-violet-500 text-white border-violet-400 shadow-violet-500/30'
-              : 'bg-white/90 text-slate-600 border-slate-100'
-            }`}>
-            {useLandmarkModel ? 'Landmark Model' : 'CNN Model'}
+          {/* Active model badge */}
+          <div
+            data-tour="model-badge"
+            className={`px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-xl sm:rounded-2xl border shadow-lg text-[0.6rem] sm:text-xs font-black uppercase tracking-wider pointer-events-auto shrink-0 ${useLandmarkModel ? 'bg-violet-500 text-white border-violet-400 shadow-violet-500/30' : 'bg-white/90 text-slate-600 border-slate-100'}`}
+          >
+            {useLandmarkModel ? 'Landmark' : 'CNN'}
           </div>
         </div>
       </div>
-      
-      <div className="absolute -top-6 -left-6 w-20 h-20 bg-yellow-300/30 rounded-full blur-2xl -z-10"></div>
-      <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-teal-400/20 rounded-full blur-3xl -z-10"></div>
+
+      {/* Decorative glows only on larger screens */}
+      <div className="hidden sm:block absolute -top-6 -left-6 w-20 h-20 bg-yellow-300/30 rounded-full blur-2xl -z-10"></div>
+      <div className="hidden sm:block absolute -bottom-10 -right-10 w-32 h-32 bg-teal-400/20 rounded-full blur-3xl -z-10"></div>
     </div>
   );
 };
-
-

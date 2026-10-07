@@ -195,68 +195,68 @@ export const AchievementsView: React.FC = () => {
   const unlockedCount = BADGES.filter(b => b.isUnlocked(progress)).length;
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col gap-8 p-4">
-      
+    <div className="w-full max-w-5xl mx-auto flex flex-col gap-5 sm:gap-8">
+
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-[2rem] p-8 lg:p-12 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-        <div className="z-10 text-center md:text-left">
-          <h1 className="text-4xl lg:text-5xl font-black mb-4 flex items-center justify-center md:justify-start gap-3">
+      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl sm:rounded-[2rem] p-5 sm:p-8 lg:p-12 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 relative overflow-hidden">
+        <div className="z-10 text-center sm:text-left">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black mb-2 sm:mb-4 flex items-center justify-center sm:justify-start gap-2 sm:gap-3">
             <span>🎖️</span> Your Badges
           </h1>
-          <p className="text-indigo-100 font-bold text-lg lg:text-xl max-w-lg">
-            Complete challenges across the app to unlock exclusive badges and show off your ASL mastery.
+          <p className="text-indigo-100 font-bold text-sm sm:text-lg lg:text-xl max-w-lg">
+            Complete challenges to unlock exclusive badges and show off your ASL mastery.
           </p>
         </div>
-        <div className="z-10 bg-white/20 backdrop-blur-md rounded-3xl p-6 text-center border-2 border-white/30">
-          <div className="text-5xl font-black text-white mb-1">
-            {unlockedCount} <span className="text-2xl text-indigo-200">/ {BADGES.length}</span>
+        <div className="z-10 bg-white/20 backdrop-blur-md rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center border-2 border-white/30 shrink-0">
+          <div className="text-3xl sm:text-5xl font-black text-white mb-1">
+            {unlockedCount} <span className="text-xl sm:text-2xl text-indigo-200">/ {BADGES.length}</span>
           </div>
-          <div className="text-sm font-bold uppercase tracking-wider text-indigo-100">
+          <div className="text-xs sm:text-sm font-bold uppercase tracking-wider text-indigo-100">
             Badges Unlocked
           </div>
         </div>
-        
+
         {/* Decorative background circles */}
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-black/10 rounded-full blur-3xl"></div>
       </div>
 
       {/* Badges Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-6">
         {BADGES.map((badge) => {
           const unlocked = badge.isUnlocked(progress);
-          
+
           return (
-            <div 
+            <div
               key={badge.id}
-              className={`relative rounded-[2rem] p-6 border-4 transition-all duration-500 flex flex-col items-center text-center ${
-                unlocked 
-                  ? 'bg-white border-indigo-100 shadow-[0_20px_50px_-12px_rgba(99,102,241,0.15)] hover:-translate-y-2' 
+              className={`relative rounded-2xl sm:rounded-[2rem] p-4 sm:p-6 border-4 transition-all duration-500 flex flex-col items-center text-center ${
+                unlocked
+                  ? 'bg-white border-indigo-100 shadow-[0_20px_50px_-12px_rgba(99,102,241,0.15)] hover:-translate-y-1 sm:hover:-translate-y-2'
                   : 'bg-slate-50 border-slate-200 grayscale opacity-70'
               }`}
             >
               {!unlocked && (
-                <div className="absolute top-4 right-4 text-2xl opacity-50">
+                <div className="absolute top-2 right-2 sm:top-4 sm:right-4 text-xl sm:text-2xl opacity-50">
                   🔒
                 </div>
               )}
-              
-              <div className={`w-24 h-24 rounded-full flex items-center justify-center text-5xl mb-4 shadow-inner ${
+
+              <div className={`w-14 h-14 sm:w-24 sm:h-24 rounded-full flex items-center justify-center text-3xl sm:text-5xl mb-3 sm:mb-4 shadow-inner ${
                 unlocked ? badge.color : 'bg-slate-300'
               }`}>
                 {badge.icon}
               </div>
-              
-              <h3 className={`text-xl font-black mb-2 ${unlocked ? 'text-slate-700' : 'text-slate-400'}`}>
+
+              <h3 className={`text-sm sm:text-xl font-black mb-1 sm:mb-2 leading-tight ${unlocked ? 'text-slate-700' : 'text-slate-400'}`}>
                 {badge.title}
               </h3>
-              
-              <p className={`font-bold text-sm ${unlocked ? 'text-slate-500' : 'text-slate-400'}`}>
+
+              <p className={`font-bold text-[0.65rem] sm:text-sm ${unlocked ? 'text-slate-500' : 'text-slate-400'}`}>
                 {badge.description}
               </p>
 
               {unlocked && (
-                <div className="mt-4 bg-green-100 text-green-600 text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full">
+                <div className="mt-2 sm:mt-4 bg-green-100 text-green-600 text-[0.6rem] sm:text-xs font-black uppercase tracking-wider px-2 py-0.5 sm:px-3 sm:py-1 rounded-full">
                   Unlocked
                 </div>
               )}

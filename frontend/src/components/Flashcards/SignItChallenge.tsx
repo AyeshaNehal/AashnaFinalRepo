@@ -116,39 +116,39 @@ export const SignItChallenge: React.FC<SignItChallengeProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[9000] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div
-        className={`relative w-full max-w-2xl bg-white rounded-[3rem] border-4 border-teal-100 shadow-2xl overflow-hidden ${
+        className={`relative w-full max-w-2xl bg-white rounded-[2rem] sm:rounded-[3rem] border-4 border-teal-100 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col ${
           shakeError ? 'animate-shake' : ''
         }`}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-teal-400 to-cyan-500 text-white px-8 py-6 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-teal-400 to-cyan-500 text-white px-5 sm:px-8 py-4 sm:py-6 flex items-center justify-between shrink-0">
           <div>
-            <div className="text-sm font-bold uppercase tracking-wider opacity-90">
+            <div className="text-xs sm:text-sm font-bold uppercase tracking-wider opacity-90">
               Sign this {isDigit ? 'number' : 'letter'}
             </div>
-            <div className="text-5xl font-black mt-1">{targetLetter}</div>
+            <div className="text-4xl sm:text-5xl font-black mt-1">{targetLetter}</div>
           </div>
 
           <button
             onClick={onDismiss}
-            className="w-12 h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors"
+            className="w-11 h-11 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-colors touch-target"
             title="Close challenge"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
         {/* Camera feed */}
-        <div className="relative aspect-video bg-slate-900">
+        <div className="relative aspect-video bg-slate-900 shrink-0">
           <CameraView />
 
           {/* Overlay UI on top of camera */}
           <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
             {/* Target letter reminder */}
-            <div className="bg-black/50 backdrop-blur-md text-white px-8 py-4 rounded-2xl border-2 border-white/30 shadow-xl">
-              <div className="text-6xl font-black">{targetLetter}</div>
+            <div className="bg-black/50 backdrop-blur-md text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl border-2 border-white/30 shadow-xl">
+              <div className="text-5xl sm:text-6xl font-black">{targetLetter}</div>
             </div>
           </div>
 
@@ -156,45 +156,45 @@ export const SignItChallenge: React.FC<SignItChallengeProps> = ({
           {isSuccess && (
             <div className="absolute inset-0 bg-emerald-500/80 backdrop-blur-sm flex items-center justify-center animate-fade-in">
               <div className="text-white text-center">
-                <div className="text-8xl mb-4">✓</div>
-                <div className="text-4xl font-black">Perfect!</div>
+                <div className="text-7xl sm:text-8xl mb-4">✓</div>
+                <div className="text-3xl sm:text-4xl font-black">Perfect!</div>
               </div>
             </div>
           )}
         </div>
 
         {/* Stats bar */}
-        <div className="bg-slate-50 px-8 py-4 flex items-center justify-between border-t-2 border-slate-100">
-          <div className="flex items-center gap-6">
+        <div className="bg-slate-50 px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between border-t-2 border-slate-100 shrink-0">
+          <div className="flex items-center gap-4 sm:gap-6">
             {/* Attempts */}
-            <div className="text-sm">
+            <div className="text-xs sm:text-sm">
               <span className="font-bold text-slate-500">Attempts:</span>
-              <span className="ml-2 font-black text-slate-700">{attempts} / 3</span>
+              <span className="ml-1 sm:ml-2 font-black text-slate-700">{attempts} / 3</span>
             </div>
 
             {/* Timer */}
-            <div className="text-sm">
+            <div className="text-xs sm:text-sm">
               <span className="font-bold text-slate-500">Time:</span>
-              <span className="ml-2 font-black text-slate-700">{timeElapsed.toFixed(1)}s</span>
+              <span className="ml-1 sm:ml-2 font-black text-slate-700">{timeElapsed.toFixed(1)}s</span>
             </div>
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {canShowHint && (
               <button
                 onClick={handleShowHint}
-                className="flex items-center gap-2 px-5 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold rounded-2xl border-2 border-amber-200 transition-colors"
+                className="flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold rounded-xl sm:rounded-2xl border-2 border-amber-200 transition-colors touch-target text-xs sm:text-sm"
               >
                 <Lightbulb className="w-4 h-4" />
-                Show Hint
+                <span className="hidden sm:inline">Show </span>Hint
               </button>
             )}
 
             {attempts >= 1 && (
               <button
                 onClick={handleRetry}
-                className="flex items-center gap-2 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-2xl border-2 border-slate-200 transition-colors"
+                className="flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl sm:rounded-2xl border-2 border-slate-200 transition-colors touch-target text-xs sm:text-sm"
               >
                 <RotateCcw className="w-4 h-4" />
                 Retry
@@ -205,18 +205,18 @@ export const SignItChallenge: React.FC<SignItChallengeProps> = ({
 
         {/* Hint display */}
         {showHint && currentHint && (
-          <div className="bg-amber-50 border-t-2 border-amber-200 px-8 py-4">
+          <div className="bg-amber-50 border-t-2 border-amber-200 px-5 sm:px-8 py-3 sm:py-4 shrink-0">
             <div className="flex items-start gap-3">
               <Lightbulb className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-              <p className="text-amber-900 font-bold">{currentHint}</p>
+              <p className="text-amber-900 font-bold text-sm sm:text-base">{currentHint}</p>
             </div>
           </div>
         )}
 
         {/* Instruction */}
         {!isSuccess && (
-          <div className="bg-teal-50 border-t-2 border-teal-100 px-8 py-4 text-center">
-            <p className="text-teal-700 font-bold text-sm">
+          <div className="bg-teal-50 border-t-2 border-teal-100 px-5 sm:px-8 py-3 sm:py-4 text-center shrink-0">
+            <p className="text-teal-700 font-bold text-xs sm:text-sm">
               Hold up your hand and sign <strong>{targetLetter}</strong>. The camera is watching!
             </p>
           </div>

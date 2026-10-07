@@ -39,15 +39,15 @@ export const Flashcard: React.FC<FlashcardProps> = ({ data, onSignIt, isMastered
         className={`w-full h-full duration-500 preserve-3d relative transition-transform ${isFlipped ? 'rotate-y-180' : ''}`}
       >
         {/* ── Front of Card (Letter + Image) ──────────────────────────────── */}
-        <div className="absolute inset-0 backface-hidden bg-white rounded-3xl border-4 border-slate-100 shadow-xl overflow-hidden flex flex-col items-center justify-center p-4 hover:border-teal-200 transition-colors">
-          <div className="text-[5rem] leading-none mb-2 transform group-hover:scale-110 transition-transform duration-300">
+        <div className="absolute inset-0 backface-hidden bg-white rounded-3xl border-4 border-slate-100 shadow-xl overflow-hidden flex flex-col items-center justify-center p-2 sm:p-4 hover:border-teal-200 transition-colors">
+          <div className="text-[3.5rem] sm:text-[5rem] leading-none mb-1 sm:mb-2 transform group-hover:scale-110 transition-transform duration-300">
             {current.emoji}
           </div>
-          <div className="flex items-baseline gap-2 mt-4">
-            <span className="text-5xl font-black text-teal-500">{data.letter}</span>
-            <span className="text-xl font-bold text-slate-400 uppercase tracking-widest">for</span>
+          <div className="flex items-baseline gap-1 sm:gap-2 mt-2 sm:mt-4">
+            <span className="text-3xl sm:text-5xl font-black text-teal-500">{data.letter}</span>
+            <span className="text-sm sm:text-xl font-bold text-slate-400 uppercase tracking-widest">for</span>
           </div>
-          <div className="text-3xl font-black text-slate-700 mt-2 tracking-tight">
+          <div className="text-lg sm:text-3xl font-black text-slate-700 mt-1 sm:mt-2 tracking-tight text-center px-1">
             {current.word}
           </div>
 
@@ -64,9 +64,9 @@ export const Flashcard: React.FC<FlashcardProps> = ({ data, onSignIt, isMastered
         </div>
 
         {/* ── Back of Card (ASL Sign) ─────────────────────────────────────── */}
-        <div className="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-3xl border-4 border-white shadow-xl overflow-hidden flex flex-col items-center justify-center p-4 text-white">
-          <p className="text-sm font-bold tracking-widest uppercase opacity-90 mb-4">ASL Sign</p>
-          <div className="w-40 h-40 bg-white rounded-2xl flex items-center justify-center border-4 border-white shadow-lg overflow-hidden p-2">
+        <div className="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-3xl border-4 border-white shadow-xl overflow-hidden flex flex-col items-center justify-center p-2 sm:p-4 text-white">
+          <p className="text-[0.6rem] sm:text-sm font-bold tracking-widest uppercase opacity-90 mb-2 sm:mb-4">ASL Sign</p>
+          <div className="w-24 h-24 sm:w-40 sm:h-40 bg-white rounded-2xl flex items-center justify-center border-4 border-white shadow-lg overflow-hidden p-1 sm:p-2">
             <img
               src={`/asl/${data.letter}.jpg`}
               alt={`ASL sign for ${data.letter}`}
@@ -80,7 +80,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ data, onSignIt, isMastered
 
           {/* Show current variant word on the back too, so the learner can
               connect the handshape to whichever vocabulary word is active. */}
-          <p className="mt-4 font-black text-lg opacity-90">{current.word}</p>
+          <p className="mt-2 sm:mt-4 font-black text-sm sm:text-lg opacity-90">{current.word}</p>
 
           {/* Sign It button — only on the flipped (ASL image) side */}
           {onSignIt && (
@@ -89,9 +89,9 @@ export const Flashcard: React.FC<FlashcardProps> = ({ data, onSignIt, isMastered
                 e.stopPropagation();
                 onSignIt(data.letter);
               }}
-              className="mt-4 px-6 py-3 bg-white text-teal-600 font-black rounded-[1.5rem] hover:bg-teal-50 border-2 border-white hover:border-teal-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 flex items-center gap-2"
+              className="mt-2 sm:mt-4 px-3 sm:px-6 py-2 sm:py-3 bg-white text-teal-600 font-black rounded-[1.5rem] hover:bg-teal-50 border-2 border-white hover:border-teal-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 flex items-center gap-1 sm:gap-2 text-xs sm:text-base"
             >
-              <span className="text-xl">✋</span>
+              <span className="text-base sm:text-xl">✋</span>
               <span>Sign It</span>
             </button>
           )}

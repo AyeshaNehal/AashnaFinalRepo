@@ -54,11 +54,11 @@ function App() {
             <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
             
             {activeTab === 'practice' ? (
-              <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 w-full">
+              <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 w-full">
                 <div className="w-full lg:w-[65%]">
                   <CameraView />
                 </div>
-                <div className="w-full lg:w-[35%] flex flex-col gap-5">
+                <div className="w-full lg:w-[35%] flex flex-col gap-3 sm:gap-5">
                   <ModeSwitcher />
                   <OutputPanel />
                   <ControlsBar />

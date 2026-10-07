@@ -29,7 +29,7 @@ export const ModelToggle: React.FC = () => {
             {useLandmarkModel ? 'Experimental' : 'Default'}
           </span>
         </span>
-        <span className="text-xs text-slate-400 mt-0.5">
+        <span className="text-xs text-slate-400 mt-0.5 hidden sm:block">
           {useLandmarkModel
             ? 'MediaPipe landmarks → MLP  (fast, background-invariant)'
             : 'Pixel crop → Deep CNN  (93.57% test accuracy)'}
