@@ -443,7 +443,7 @@ export const CameraView: React.FC = () => {
         )}
 
         <video ref={videoRef} className="hidden" playsInline />
-        <canvas ref={canvasRef} width={640} height={480} className="w-full h-full object-cover rounded-xl sm:rounded-[1.5rem]" />
+        <canvas ref={canvasRef} width={640} height={480} className="absolute inset-0 w-full h-full object-cover rounded-xl sm:rounded-[1.5rem]" />
         <canvas ref={hiddenCanvasRef} width={64} height={64} className="hidden" />
 
         {/* Status overlays */}
