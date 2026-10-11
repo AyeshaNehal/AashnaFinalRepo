@@ -102,10 +102,13 @@ const TABS: TabDef[] = [
 
 export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
   return (
-    <div className="mb-4 sm:mb-6 lg:mb-8 w-full overflow-x-auto pb-2 hide-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0">
+    /* tab-scroll-wrapper adds a right-edge fade hint when the bar overflows */
+    <div className="tab-scroll-wrapper mb-4 sm:mb-6 lg:mb-8 w-full overflow-x-auto pb-2 hide-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0 scroll-smooth">
       <div className="flex items-center justify-start xl:justify-center min-w-max">
         <div
           data-tour="tab-bar"
+          role="tablist"
+          aria-label="Learning modes"
           className="bg-white/60 backdrop-blur-md p-1 sm:p-1.5 rounded-2xl sm:rounded-full border-2 border-white shadow-lg shadow-teal-500/10 flex items-center gap-0.5 sm:gap-1"
         >
           {TABS.map((tab) => {
@@ -113,6 +116,9 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
             return (
               <button
                 key={tab.id}
+                role="tab"
+                aria-selected={isActive}
+                aria-label={tab.label}
                 onClick={() => onTabChange(tab.id)}
                 className={`
                   px-3 py-2.5 sm:px-5 sm:py-3 rounded-xl sm:rounded-full
@@ -121,6 +127,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
                   flex items-center gap-1.5 sm:gap-2
                   whitespace-nowrap
                   touch-target
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-1
                   ${isActive
                     ? `${tab.activeClass} transform scale-105`
                     : `text-slate-800 ${tab.hoverClass}`
