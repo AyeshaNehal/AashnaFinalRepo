@@ -433,7 +433,7 @@ export const CameraView: React.FC = () => {
     <div className="w-full flex flex-col gap-3 sm:gap-4 relative">
       <div
         data-tour="camera-view"
-        className="relative w-full aspect-video bg-white rounded-2xl sm:rounded-[3rem] overflow-hidden border-4 sm:border-8 border-teal-100 shadow-[0_10px_30px_-8px_rgba(20,184,166,0.25)] sm:shadow-[0_20px_50px_-12px_rgba(20,184,166,0.3)] flex items-center justify-center"
+        className="relative mx-auto w-full max-w-[360px] sm:max-w-none aspect-[3/4] sm:aspect-video bg-white rounded-2xl sm:rounded-[3rem] overflow-hidden border-4 sm:border-8 border-teal-100 shadow-[0_10px_30px_-8px_rgba(20,184,166,0.25)] sm:shadow-[0_20px_50px_-12px_rgba(20,184,166,0.3)] flex items-center justify-center"
       >
         {!isReady && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 gap-4 sm:gap-6 bg-slate-50/80 backdrop-blur-sm z-10">
