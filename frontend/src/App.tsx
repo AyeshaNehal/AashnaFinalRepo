@@ -26,7 +26,20 @@ const TOUR_SEEN_KEY = 'hasSeenAashnaTour';
 function App() {
   const [activeTab, setActiveTab] = useState<TabMode>('practice');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // True only when the user logged in via Firebase (email/password or Google).
+  // False for guests and signed-out visitors — controls Logout visibility.
+  const [isFirebaseAuth, setIsFirebaseAuth] = useState(false);
   const [tourRunning, setTourRunning] = useState(false);
+
+  /**
+   * Called by AuthView for both real logins and guest sessions.
+   * asGuest=false → Firebase-authenticated user; show Logout.
+   * asGuest=true  → guest session; hide Logout.
+   */
+  const handleLogin = (asGuest: boolean) => {
+    setIsAuthenticated(true);
+    setIsFirebaseAuth(!asGuest);
+  };
 
   // The tour highlights elements that only exist in the Practice tab, so
   // always return there before starting (covers replays from other tabs).
@@ -46,9 +59,9 @@ function App() {
 
   return (
     <Provider store={store}>
-      <MainLayout onHelpClick={isAuthenticated ? startTour : undefined}>
+      <MainLayout onHelpClick={isAuthenticated ? startTour : undefined} isFirebaseAuth={isFirebaseAuth}>
         {!isAuthenticated ? (
-          <AuthView onLogin={() => setIsAuthenticated(true)} />
+          <AuthView onLogin={handleLogin} />
         ) : (
           <div className="w-full flex flex-col">
             <TabBar activeTab={activeTab} onTabChange={setActiveTab} />

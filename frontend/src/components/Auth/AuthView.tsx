@@ -4,7 +4,8 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithP
 import { syncProgressFromCloud } from '../../services/progressService';
 
 interface AuthViewProps {
-  onLogin: () => void;
+  /** Called when the user authenticates. asGuest=true for guest sessions. */
+  onLogin: (asGuest: boolean) => void;
 }
 
 export const AuthView: React.FC<AuthViewProps> = ({ onLogin }) => {
@@ -27,7 +28,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin }) => {
           await createUserWithEmailAndPassword(auth, email, password);
         }
         await syncProgressFromCloud();
-        onLogin();
+        onLogin(false); // authenticated user
       } catch (err: any) {
         setError(err.message || 'Authentication failed. Please check your credentials.');
       } finally {
@@ -42,12 +43,17 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin }) => {
     try {
       await signInWithPopup(auth, googleProvider);
       await syncProgressFromCloud();
-      onLogin();
+      onLogin(false); // authenticated user
     } catch (err: any) {
       setError(err.message || 'Google Sign-In failed.');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGuestPlay = () => {
+    if (loading) return; // prevent action while an auth request is in-flight
+    onLogin(true); // guest session — no Firebase auth, no progress sync
   };
 
   return (
@@ -62,10 +68,15 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin }) => {
         <h1 className="text-2xl sm:text-3xl font-black text-slate-700 mb-1 sm:mb-2 text-center">
           {isLogin ? "Welcome Back!" : "Start Learning!"}
         </h1>
-        <p className="text-slate-500 font-bold mb-5 sm:mb-6 text-center text-sm sm:text-base">
+        <p className="text-slate-500 font-bold mb-2 sm:mb-3 text-center text-sm sm:text-base">
           {isLogin
             ? "Log in to keep your streak alive."
             : "Create an account to track your progress."}
+        </p>
+
+        {/* Value proposition */}
+        <p className="text-slate-400 text-xs sm:text-sm font-semibold text-center mb-4 sm:mb-5 px-2 leading-relaxed">
+          Learn ASL with your camera — practice signs, explore flashcards, and play interactive games.
         </p>
 
         {error && (
@@ -133,12 +144,15 @@ export const AuthView: React.FC<AuthViewProps> = ({ onLogin }) => {
           </button>
         </div>
 
-        {/* Guest Mode option */}
+        {/* Guest Mode — secondary outlined button for clear tap target */}
         <button
-          onClick={onLogin}
-          className="mt-4 sm:mt-6 text-xs sm:text-sm text-slate-400 font-bold hover:text-slate-600 underline underline-offset-4 active:scale-95 transition-all touch-target"
+          onClick={handleGuestPlay}
+          disabled={loading}
+          className="mt-4 sm:mt-6 w-full border-2 border-slate-200 text-slate-500 font-black text-sm sm:text-base py-3 sm:py-3.5 rounded-2xl flex items-center justify-center gap-2 hover:border-slate-300 hover:text-slate-700 hover:bg-slate-50 active:scale-95 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed touch-target"
         >
-          Play as Guest (Progress won't save)
+          <span>👤</span>
+          Play as Guest
+          <span className="text-xs font-semibold text-slate-400 ml-1">(progress won't save)</span>
         </button>
 
       </div>

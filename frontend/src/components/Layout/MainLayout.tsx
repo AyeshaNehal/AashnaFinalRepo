@@ -5,12 +5,14 @@ interface MainLayoutProps {
   children: React.ReactNode;
   /** Opens the guided tour — provided only when the user is authenticated. */
   onHelpClick?: () => void;
+  /** True only for Firebase-authenticated users (not guests). Controls Logout visibility. */
+  isFirebaseAuth?: boolean;
 }
 
-export const MainLayout: React.FC<MainLayoutProps> = ({ children, onHelpClick }) => {
+export const MainLayout: React.FC<MainLayoutProps> = ({ children, onHelpClick, isFirebaseAuth = false }) => {
   return (
     <div className="min-h-screen flex flex-col selection:bg-teal-200 selection:text-teal-900 overflow-x-hidden">
-      <Header onHelpClick={onHelpClick} />
+      <Header onHelpClick={onHelpClick} isFirebaseAuth={isFirebaseAuth} />
       <main className="flex-1 w-full max-w-[90rem] mx-auto px-3 py-3 sm:px-4 sm:py-4 md:px-6 md:py-6 lg:px-8 lg:py-8 flex flex-col gap-4 lg:gap-8">
         {children}
       </main>
