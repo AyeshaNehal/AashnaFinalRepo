@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { Results } from '@mediapipe/hands';
 import * as mpHands from '@mediapipe/hands';
@@ -13,13 +13,88 @@ import { stabilityTone } from '../../utils/audio';
 // Smoothed-candidate tracking refs live outside the component so they survive
 // re-renders without triggering them (they're never in JSX).
 
+// ─── Camera error types ───────────────────────────────────────────────────────
+type CameraError =
+  | { kind: 'permission' }
+  | { kind: 'not_found' }
+  | { kind: 'in_use' }
+  | { kind: 'overconstrained' }
+  | { kind: 'insecure' }
+  | { kind: 'timeout' }
+  | { kind: 'playback' }
+  | { kind: 'unknown'; message: string };
+
+function classifyError(e: unknown): CameraError {
+  if (e instanceof DOMException) {
+    switch (e.name) {
+      case 'NotAllowedError':
+      case 'PermissionDeniedError':
+        return { kind: 'permission' };
+      case 'NotFoundError':
+      case 'DevicesNotFoundError':
+        return { kind: 'not_found' };
+      case 'NotReadableError':
+      case 'TrackStartError':
+        return { kind: 'in_use' };
+      case 'OverconstrainedError':
+      case 'ConstraintNotSatisfiedError':
+        return { kind: 'overconstrained' };
+      case 'NotSupportedError':
+      case 'SecurityError':
+        return { kind: 'insecure' };
+      default:
+        break;
+    }
+  }
+  return { kind: 'unknown', message: e instanceof Error ? e.message : String(e) };
+}
+
+function errorTitle(err: CameraError): string {
+  switch (err.kind) {
+    case 'permission':    return 'Camera Access Denied';
+    case 'not_found':     return 'No Camera Found';
+    case 'in_use':        return 'Camera Unavailable';
+    case 'overconstrained': return 'Camera Not Compatible';
+    case 'insecure':      return 'Secure Context Required';
+    case 'timeout':       return 'Camera Taking Too Long';
+    case 'playback':      return 'Video Playback Failed';
+    case 'unknown':       return 'Camera Startup Failed';
+  }
+}
+
+function errorBody(err: CameraError): string {
+  switch (err.kind) {
+    case 'permission':
+      return 'Permission to use your camera was denied. Open your browser\'s site settings and allow camera access, then tap Retry.';
+    case 'not_found':
+      return 'No compatible camera was found on this device. If you have an external webcam, connect it and tap Retry.';
+    case 'in_use':
+      return 'The camera appears to be in use by another application. Close other apps or browser tabs using the camera, then tap Retry.';
+    case 'overconstrained':
+      return 'The requested camera settings could not be satisfied by your device. Tap Retry to try with relaxed settings.';
+    case 'insecure':
+      return 'Camera access requires a secure connection (HTTPS) or a supported browser. Make sure you are using a modern browser on HTTPS.';
+    case 'timeout':
+      return 'Camera initialization took too long. Check your connection, close other apps using the camera, and tap Retry.';
+    case 'playback':
+      return 'The camera stream could not be started. Tap Retry to try again.';
+    case 'unknown':
+      return 'An unexpected error occurred while starting the camera. Tap Retry to try again.';
+  }
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+const INIT_TIMEOUT_MS = 9000;
+
 export const CameraView: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
   const dispatch = useDispatch();
   const [isReady, setIsReady] = useState(false);
-  
+  const [cameraError, setCameraError] = useState<CameraError | null>(null);
+  const [isRetrying, setIsRetrying] = useState(false);
+
   // Commit a sign once the smoothed prediction has been stable for this duration.
   // 400 ms (~12 frames at 30 fps) gives near-instant feedback while the
   // 5-frame confidence-weighted buffer absorbs jitter and slight hand rotations.
@@ -74,11 +149,26 @@ export const CameraView: React.FC = () => {
     targetLetterRef.current = targetLetter;
   }, [targetLetter]);
 
+  // ─── Initialization effect ──────────────────────────────────────────────────
+  // A ref tracks the "generation" of the current initialization attempt so
+  // that stale async callbacks from a previous attempt (or a previous Retry)
+  // cannot overwrite the state of a newer attempt.
+  const initGenRef = useRef(0);
+
+  const stopStream = useCallback((stream: MediaStream | null) => {
+    stream?.getTracks().forEach(t => t.stop());
+  }, []);
+
   useEffect(() => {
     let hands: any = null;
     let isActive = true;
     let requestRef: number;
     let isProcessing = false;
+    // Generation token — if this changes (e.g. retry), async callbacks from
+    // this closure will detect they are stale and bail out.
+    const myGen = ++initGenRef.current;
+    let activeStream: MediaStream | null = null;
+    let initTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
     // In-memory canvas for lightweight preprocessing before MediaPipe
     const preprocessCanvas = document.createElement('canvas');
@@ -87,7 +177,35 @@ export const CameraView: React.FC = () => {
     // willReadFrequently is crucial for performance when using getImageData constantly
     const preCtx = preprocessCanvas.getContext('2d', { willReadFrequently: true });
 
+    // Guard: only allow state updates if this attempt is still the active one.
+    const isCurrent = () => isActive && initGenRef.current === myGen;
+
+    const cleanupTimeout = () => {
+      if (initTimeoutId !== null) {
+        clearTimeout(initTimeoutId);
+        initTimeoutId = null;
+      }
+    };
+
+    const failWith = (err: CameraError) => {
+      cleanupTimeout();
+      stopStream(activeStream);
+      activeStream = null;
+      if (isCurrent()) {
+        console.error('[CameraView] init failed:', err.kind, err.kind === 'unknown' ? (err as any).message : '');
+        setCameraError(err);
+        setIsRetrying(false);
+      }
+    };
+
     const setupMediaPipe = async () => {
+      // Arm the startup timeout.
+      initTimeoutId = setTimeout(() => {
+        if (isCurrent()) {
+          failWith({ kind: 'timeout' });
+        }
+      }, INIT_TIMEOUT_MS);
+
       const HandsConstructor = mpHands.Hands || (mpHands as any).default?.Hands || (window as any).Hands;
       hands = new HandsConstructor({
         locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
@@ -106,66 +224,119 @@ export const CameraView: React.FC = () => {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { width: 640, height: 480, facingMode: 'user', frameRate: { ideal: 60 } }
         });
-        
+
+        // If the component unmounted or a newer attempt took over, immediately
+        // discard this stream and stop.
+        if (!isCurrent()) {
+          stopStream(stream);
+          return;
+        }
+
+        activeStream = stream;
+
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          videoRef.current.onloadedmetadata = () => {
-            videoRef.current?.play();
-            setIsReady(true);
-            
-            const processFrame = async () => {
-              if (!isActive || !videoRef.current || !preCtx) return;
-              
-              if (!isProcessing) {
-                isProcessing = true;
-                
-                preCtx.drawImage(videoRef.current, 0, 0, 640, 480);
-                
-                const imageData = preCtx.getImageData(0, 0, 640, 480);
-                const data = imageData.data;
-                
-                // Sample every 64 bytes (16 pixels × 4 channels) — 4× fewer
-                // iterations than the old step-16 loop; plenty for an average.
-                let totalLuminance = 0;
-                let count = 0;
-                for (let i = 0; i < data.length; i += 64) {
-                  totalLuminance += (data[i] + data[i+1] + data[i+2]) / 3;
-                  count++;
-                }
-                const avgLuminance = totalLuminance / count;
-                
-                const LUMINANCE_THRESHOLD = 100;
-                if (avgLuminance < LUMINANCE_THRESHOLD) {
-                  const gamma = 1.0 + (1.0 - (avgLuminance / LUMINANCE_THRESHOLD)); 
-                  const gammaCorrection = 1 / gamma;
-                  
-                  const lut = new Uint8Array(256);
-                  for (let i = 0; i < 256; i++) {
-                    lut[i] = Math.min(255, Math.pow(i / 255, gammaCorrection) * 255);
-                  }
-                  
-                  for (let i = 0; i < data.length; i += 4) {
-                    data[i]     = lut[data[i]];     
-                    data[i + 1] = lut[data[i + 1]]; 
-                    data[i + 2] = lut[data[i + 2]]; 
-                  }
-                  preCtx.putImageData(imageData, 0, 0);
-                }
-                
-                await hands?.send({ image: preprocessCanvas });
-                isProcessing = false;
-              }
-              
-              if (isActive) {
-                requestRef = requestAnimationFrame(processFrame);
-              }
+
+          // Wait for the video to have enough metadata to play.
+          await new Promise<void>((resolve, reject) => {
+            const video = videoRef.current!;
+
+            const onReady = () => {
+              cleanup();
+              resolve();
             };
+            const onError = () => {
+              cleanup();
+              reject(new DOMException('Video element failed to load stream', 'NotReadableError'));
+            };
+            const cleanup = () => {
+              video.removeEventListener('loadedmetadata', onReady);
+              video.removeEventListener('error', onError);
+            };
+
+            // If metadata is already available (stream already set), resolve immediately.
+            if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
+              resolve();
+            } else {
+              video.addEventListener('loadedmetadata', onReady, { once: true });
+              video.addEventListener('error', onError, { once: true });
+            }
+          });
+
+          if (!isCurrent()) return;
+
+          // Start playback and wait for it to succeed before marking ready.
+          try {
+            await videoRef.current.play();
+          } catch (playErr) {
+            if (isCurrent()) {
+              console.error('[CameraView] play() rejected:', playErr);
+              failWith({ kind: 'playback' });
+            }
+            return;
+          }
+
+          if (!isCurrent()) return;
+
+          // Camera is live — clear timeout and mark ready.
+          cleanupTimeout();
+          setIsReady(true);
+          setIsRetrying(false);
+
+          const processFrame = async () => {
+            if (!isActive || !videoRef.current || !preCtx) return;
             
-            processFrame();
+            if (!isProcessing) {
+              isProcessing = true;
+              
+              preCtx.drawImage(videoRef.current, 0, 0, 640, 480);
+              
+              const imageData = preCtx.getImageData(0, 0, 640, 480);
+              const data = imageData.data;
+              
+              // Sample every 64 bytes (16 pixels × 4 channels) — 4× fewer
+              // iterations than the old step-16 loop; plenty for an average.
+              let totalLuminance = 0;
+              let count = 0;
+              for (let i = 0; i < data.length; i += 64) {
+                totalLuminance += (data[i] + data[i+1] + data[i+2]) / 3;
+                count++;
+              }
+              const avgLuminance = totalLuminance / count;
+              
+              const LUMINANCE_THRESHOLD = 100;
+              if (avgLuminance < LUMINANCE_THRESHOLD) {
+                const gamma = 1.0 + (1.0 - (avgLuminance / LUMINANCE_THRESHOLD)); 
+                const gammaCorrection = 1 / gamma;
+                
+                const lut = new Uint8Array(256);
+                for (let i = 0; i < 256; i++) {
+                  lut[i] = Math.min(255, Math.pow(i / 255, gammaCorrection) * 255);
+                }
+                
+                for (let i = 0; i < data.length; i += 4) {
+                  data[i]     = lut[data[i]];     
+                  data[i + 1] = lut[data[i + 1]]; 
+                  data[i + 2] = lut[data[i + 2]]; 
+                }
+                preCtx.putImageData(imageData, 0, 0);
+              }
+              
+              await hands?.send({ image: preprocessCanvas });
+              isProcessing = false;
+            }
+            
+            if (isActive) {
+              requestRef = requestAnimationFrame(processFrame);
+            }
           };
+          
+          processFrame();
         }
       } catch (e) {
-        console.error("Camera error:", e);
+        if (isCurrent()) {
+          failWith(classifyError(e));
+        }
       }
     };
 
@@ -173,14 +344,29 @@ export const CameraView: React.FC = () => {
 
     return () => {
       isActive = false;
+      cleanupTimeout();
       if (requestRef) cancelAnimationFrame(requestRef);
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
       }
+      // Also stop any stream acquired but not yet assigned to the video element.
+      stopStream(activeStream);
       hands?.close();
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRetrying, stopStream]);
+
+  // ─── Retry handler ──────────────────────────────────────────────────────────
+  const handleRetry = useCallback(() => {
+    // Prevent double-tapping.
+    if (isRetrying) return;
+    setCameraError(null);
+    setIsReady(false);
+    setIsRetrying(true);
+    // Toggling isRetrying triggers the useEffect dependency and restarts init.
+  }, [isRetrying]);
 
   const onResults = async (results: Results) => {
     if (!canvasRef.current || !videoRef.current || !hiddenCanvasRef.current) return;
@@ -265,7 +451,7 @@ export const CameraView: React.FC = () => {
 
         if (useLandmarkRef.current) {
           // -- Landmark model path ------------------------------------------
-          // No canvas/pixel work needed � use the already-extracted landmarks.
+          // No canvas/pixel work needed — use the already-extracted landmarks.
           // primaryHandLandmarks are the raw NormalizedLandmark objects from MediaPipe.
           prediction = await predictLandmarks(primaryHandLandmarks, modeRef.current);
         } else {
@@ -303,10 +489,10 @@ export const CameraView: React.FC = () => {
             smoothedScore  = score;
           }
         }
-        // Ratio of the winner's score to the total � 1.0 means full agreement.
+        // Ratio of the winner's score to the total — 1.0 means full agreement.
         const stability = totalScore > 0 ? smoothedScore / totalScore : 0;
 
-        // Hint logic � uses raw per-frame prediction for immediate feedback.
+        // Hint logic — uses raw per-frame prediction for immediate feedback.
         if (targetLetterRef.current) {
           if (prediction.letter !== targetLetterRef.current || prediction.confidence < CONFIDENCE_THRESHOLD) {
             if (now - lastHintTimeRef.current > 400) {
@@ -324,15 +510,15 @@ export const CameraView: React.FC = () => {
 
         // -- Commit gate -----------------------------------------------------
         // All conditions must hold:
-        //  1. Raw current-frame confidence = CONFIDENCE_THRESHOLD (0.55)
-        //  2. Smoothed stability = 0.65
-        //  3. Buffer has = 3 frames
+        //  1. Raw current-frame confidence >= CONFIDENCE_THRESHOLD (0.55)
+        //  2. Smoothed stability >= 0.65
+        //  3. Buffer has >= 3 frames
         //  4. Same-letter cooldown expired (allows two-digit numbers like 11)
-        //  5. Candidate has been stable for = STABILITY_MS (400ms)
+        //  5. Candidate has been stable for >= STABILITY_MS (400ms)
         //
         // When condition 1 fails, the current candidate is actively cancelled
         // so that the stability timer restarts from zero when confidence
-        // recovers � this prevents low-confidence letters from committing just
+        // recovers — this prevents low-confidence letters from committing just
         // because they dominated the temporal buffer across a brief dip.
         if (
           prediction.confidence >= CONFIDENCE_THRESHOLD &&
@@ -343,7 +529,7 @@ export const CameraView: React.FC = () => {
           // Time-based debounce: block the same letter only within the
           // cooldown window after the last commit.  This replaces the old
           // permanent same-letter block and allows signing two-digit numbers
-          // (e.g. "1" ? "1" for 11) after the brief cooldown expires.
+          // (e.g. "1" → "1" for 11) after the brief cooldown expires.
           const sameLetterOnCooldown =
             letter === candidateLetterRef.current &&
             (now - lastCommitTimeRef.current) < SAME_LETTER_COOLDOWN;
@@ -376,7 +562,7 @@ export const CameraView: React.FC = () => {
               );
             }
           } else {
-            // Same letter on cooldown � cancel any in-progress tone.
+            // Same letter on cooldown — cancel any in-progress tone.
             stabilityTone.cancel();
           }
 
@@ -414,7 +600,7 @@ export const CameraView: React.FC = () => {
         console.error("Prediction error:", e);
       }
     } else {
-      // No hand detected � reset all smoothing state so the next sign starts
+      // No hand detected — reset all smoothing state so the next sign starts
       // with a clean buffer and no stale candidate.
       stabilityTone.cancel();
       lastCommitTimeRef.current       = 0;
@@ -435,10 +621,45 @@ export const CameraView: React.FC = () => {
         data-tour="camera-view"
         className="relative mx-auto w-full max-w-[360px] sm:max-w-none aspect-[3/4] sm:aspect-video bg-white rounded-2xl sm:rounded-[3rem] overflow-hidden border-4 sm:border-8 border-teal-100 shadow-[0_10px_30px_-8px_rgba(20,184,166,0.25)] sm:shadow-[0_20px_50px_-12px_rgba(20,184,166,0.3)] flex items-center justify-center"
       >
-        {!isReady && (
+        {/* Loading overlay — shown while camera is initializing */}
+        {!isReady && !cameraError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 gap-4 sm:gap-6 bg-slate-50/80 backdrop-blur-sm z-10">
             <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-teal-400 border-t-transparent rounded-full animate-spin shadow-lg"></div>
             <p className="font-bold text-base sm:text-lg tracking-wide text-slate-600">Starting Camera...</p>
+          </div>
+        )}
+
+        {/* Error overlay */}
+        {cameraError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 sm:gap-5 bg-slate-50/95 backdrop-blur-sm z-10 px-6 text-center">
+            {/* Icon */}
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+              <svg className="w-6 h-6 sm:w-7 sm:h-7 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+            </div>
+            {/* Title */}
+            <p className="font-black text-base sm:text-lg text-slate-700 leading-snug">
+              {errorTitle(cameraError)}
+            </p>
+            {/* Body */}
+            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-[260px]">
+              {errorBody(cameraError)}
+            </p>
+            {/* Retry button */}
+            <button
+              onClick={handleRetry}
+              disabled={isRetrying}
+              className="mt-1 px-5 py-2.5 rounded-xl bg-teal-500 text-white font-bold text-sm tracking-wide shadow-md active:scale-95 transition-transform disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isRetrying ? 'Retrying...' : 'Retry'}
+            </button>
+            {/* Extra hint for permission errors */}
+            {cameraError.kind === 'permission' && (
+              <p className="text-[0.65rem] sm:text-xs text-slate-400 max-w-[240px]">
+                After granting access in your browser settings, tap Retry.
+              </p>
+            )}
           </div>
         )}
 
@@ -451,9 +672,9 @@ export const CameraView: React.FC = () => {
           {/* Camera status */}
           <div className="bg-white/90 backdrop-blur-md px-3 py-2 sm:px-5 sm:py-3 rounded-xl sm:rounded-2xl border border-slate-100 shadow-xl pointer-events-auto shrink-0">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full shrink-0 ${isReady ? 'bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]' : 'bg-slate-300'}`}></div>
+              <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full shrink-0 ${isReady ? 'bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]' : cameraError ? 'bg-red-400' : 'bg-slate-300'}`}></div>
               <span className="text-xs sm:text-sm font-black text-slate-600 uppercase tracking-wider">
-                {isReady ? 'Live' : 'Connecting'}
+                {isReady ? 'Live' : cameraError ? 'Error' : 'Connecting'}
               </span>
             </div>
           </div>
