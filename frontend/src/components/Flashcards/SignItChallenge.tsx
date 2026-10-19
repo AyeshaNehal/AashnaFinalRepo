@@ -141,7 +141,7 @@ export const SignItChallenge: React.FC<SignItChallengeProps> = ({
         </div>
 
         {/* Camera feed */}
-        <div className="relative aspect-video bg-slate-900 shrink-0">
+        <div className="relative aspect-[3/4] sm:aspect-video max-h-[60vh] sm:max-h-none bg-slate-900 shrink-0">
           <CameraView />
 
           {/* Overlay UI on top of camera */}

@@ -21,7 +21,11 @@ export const LeaderboardView: React.FC = () => {
       setError(null);
       try {
         const q = query(collection(db, 'users'), orderBy('xp', 'desc'), limit(10));
-        const querySnapshot = await getDocs(q);
+        // Fail fast (8s) so a slow network never leaves the spinner hanging
+        const querySnapshot = await Promise.race([
+          getDocs(q),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Leaderboard request timed out')), 8000)),
+        ]);
         
         const fetchedUsers: LeaderboardUser[] = [];
         querySnapshot.forEach((doc) => {
