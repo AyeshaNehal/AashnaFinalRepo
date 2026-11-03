@@ -2,10 +2,21 @@ export interface FlashcardData {
   letter: string;
   word: string;
   emoji: string;
+  image?: string;
+  imageUrl?: string;
+  frontImage?: string;
+  backImage?: string;
   /** Optional alternative words for the same letter. Tap the card's swap
    *  button to cycle through them — helps learners associate each letter
    *  with multiple vocabulary items rather than a single fixed word. */
-  variants?: Array<{ word: string; emoji: string }>;
+  variants?: Array<{
+    word: string;
+    emoji: string;
+    image?: string;
+    imageUrl?: string;
+    frontImage?: string;
+    backImage?: string;
+  }>;
 }
 
 export const flashcards: FlashcardData[] = [
