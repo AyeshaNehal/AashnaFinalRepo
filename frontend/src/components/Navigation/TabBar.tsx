@@ -11,7 +11,6 @@ interface TabBarProps {
 interface TabDef {
   id: TabMode;
   label: string;
-  shortLabel: string;    // shown on small screens
   icon: React.ReactNode;
   activeClass: string;
   hoverClass: string;
@@ -21,7 +20,6 @@ const TABS: TabDef[] = [
   {
     id: 'practice',
     label: 'Live Practice',
-    shortLabel: 'Practice',
     icon: <Camera className="w-4 h-4" />,
     activeClass: 'bg-gradient-to-r from-teal-400 to-emerald-400 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-teal-600',
@@ -29,7 +27,6 @@ const TABS: TabDef[] = [
   {
     id: 'flashcards',
     label: 'Flashcards',
-    shortLabel: 'Cards',
     icon: <Layers className="w-4 h-4" />,
     activeClass: 'bg-gradient-to-r from-rose-400 to-orange-400 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-rose-500',
@@ -37,7 +34,6 @@ const TABS: TabDef[] = [
   {
     id: 'quiz',
     label: 'Duolingo Mode',
-    shortLabel: 'Quiz',
     icon: <span className="text-base leading-none">🦉</span>,
     activeClass: 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-violet-500',
@@ -45,7 +41,6 @@ const TABS: TabDef[] = [
   {
     id: 'numbers_game',
     label: 'Numbers Game',
-    shortLabel: 'Numbers',
     icon: <Calculator className="w-4 h-4" />,
     activeClass: 'bg-gradient-to-r from-cyan-400 to-blue-500 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-cyan-500',
@@ -53,7 +48,6 @@ const TABS: TabDef[] = [
   {
     id: 'spelling',
     label: 'Spelling Bee',
-    shortLabel: 'Spelling',
     icon: <SpellCheck className="w-4 h-4" />,
     activeClass: 'bg-gradient-to-r from-pink-400 to-rose-500 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-pink-500',
@@ -61,7 +55,6 @@ const TABS: TabDef[] = [
   {
     id: 'roleplay',
     label: 'Roleplay',
-    shortLabel: 'Chat',
     icon: <MessageCircle className="w-4 h-4" />,
     activeClass: 'bg-gradient-to-r from-blue-400 to-cyan-500 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-blue-500',
@@ -69,7 +62,6 @@ const TABS: TabDef[] = [
   {
     id: 'tutorials',
     label: 'Tutorials',
-    shortLabel: 'Learn',
     icon: <GraduationCap className="w-4 h-4" />,
     activeClass: 'bg-gradient-to-r from-lime-400 to-emerald-500 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-lime-600',
@@ -77,7 +69,6 @@ const TABS: TabDef[] = [
   {
     id: 'reply_mode',
     label: 'Reply Mode',
-    shortLabel: 'Reply',
     icon: <Keyboard className="w-4 h-4" />,
     activeClass: 'bg-gradient-to-r from-sky-400 to-indigo-400 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-sky-500',
@@ -85,7 +76,6 @@ const TABS: TabDef[] = [
   {
     id: 'leaderboard',
     label: 'Leaderboard',
-    shortLabel: 'Ranks',
     icon: <Trophy className="w-4 h-4" />,
     activeClass: 'bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-amber-500',
@@ -93,7 +83,6 @@ const TABS: TabDef[] = [
   {
     id: 'achievements',
     label: 'Badges',
-    shortLabel: 'Badges',
     icon: <Medal className="w-4 h-4" />,
     activeClass: 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md',
     hoverClass: 'hover:bg-white hover:text-indigo-500',
@@ -102,14 +91,13 @@ const TABS: TabDef[] = [
 
 export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
   return (
-    /* tab-scroll-wrapper adds a right-edge fade hint when the bar overflows */
-    <div className="tab-scroll-wrapper mb-4 sm:mb-6 lg:mb-8 w-full overflow-x-auto pb-2 hide-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0 scroll-smooth">
-      <div className="flex items-center justify-start xl:justify-center min-w-max">
+    <div className="mb-4 sm:mb-6 lg:mb-8 w-full">
+      <div className="flex w-full justify-center">
         <div
           data-tour="tab-bar"
           role="tablist"
           aria-label="Learning modes"
-          className="bg-white/60 backdrop-blur-md p-1 sm:p-1.5 rounded-2xl sm:rounded-full border-2 border-white shadow-lg shadow-teal-500/10 flex items-center gap-0.5 sm:gap-1"
+          className="w-fit max-w-full bg-white/60 backdrop-blur-md p-1 sm:p-1.5 rounded-2xl sm:rounded-full border-2 border-white shadow-lg shadow-teal-500/10 flex flex-wrap items-center justify-center gap-0.5 sm:gap-1"
         >
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -129,15 +117,13 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabChange }) => {
                   touch-target
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-1
                   ${isActive
-                    ? `${tab.activeClass} transform scale-105`
+                    ? tab.activeClass
                     : `text-slate-800 ${tab.hoverClass}`
                   }
                 `}
               >
                 {tab.icon}
-                {/* On very small screens show shortLabel, on sm+ show full label */}
-                <span className="sm:hidden">{tab.shortLabel}</span>
-                <span className="hidden sm:inline">{tab.label}</span>
+                <span>{tab.label}</span>
               </button>
             );
           })}
