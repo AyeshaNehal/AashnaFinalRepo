@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { appendChar, backspace, backspaceToWordStart, clearText } from '../../store/predictionSlice';
 import { RootState } from '../../store';
 
-export const ControlsBar: React.FC = () => {
+export const ControlsBar: React.FC<{ showSpeak?: boolean }> = ({ showSpeak = true }) => {
   const dispatch = useDispatch();
   const text = useSelector((state: RootState) => state.prediction.text);
 
@@ -55,14 +55,14 @@ export const ControlsBar: React.FC = () => {
       </button>
 
       {/* Speak — full width on mobile so it stands out */}
-      <button
+      {showSpeak && <button
         onClick={handleSpeak}
         disabled={!text}
         className="touch-target col-span-2 sm:col-span-1 sm:ml-auto sm:flex-none sm:min-w-[9rem] px-4 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-teal-400 to-cyan-500 hover:from-teal-500 hover:to-cyan-600 disabled:from-slate-200 disabled:to-slate-200 disabled:text-slate-400 text-white rounded-2xl sm:rounded-[1.5rem] border-0 disabled:border-2 disabled:border-slate-100 active:scale-95 hover:-translate-y-1 hover:shadow-xl active:translate-y-0 hover:shadow-teal-500/40 transition-all duration-300 font-black flex items-center justify-center gap-2 shadow-lg shadow-teal-500/30 disabled:shadow-none"
       >
         <span className="text-sm sm:text-base">Speak</span>
         <span className="text-xl sm:text-2xl animate-pulse">🔊</span>
-      </button>
+      </button>}
     </div>
   );
 };

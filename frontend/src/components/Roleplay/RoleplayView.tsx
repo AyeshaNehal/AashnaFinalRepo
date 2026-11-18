@@ -5,14 +5,13 @@ import { CameraView } from '../Camera/CameraView';
 import { ControlsBar } from '../Controls/ControlsBar';
 import { clearText, setSignMode } from '../../store/predictionSlice';
 import { addXp, UserProgress, getProgress } from '../../services/progressService';
-import { playSuccessSound, speakText, stopSpeaking } from '../../utils/audio';
+import { playSuccessSound } from '../../utils/audio';
 import { sendChatMessage, type ChatMessage } from '../../services/chatService';
 
 // Free-form conversation with the AI chatbot. The user signs a message with
 // the camera (recognized letters accumulate in state.prediction.text), presses
 // Send, and the message is posted to /api/chat on our backend — the only place
-// the Gemini API key lives. Bot replies appear in the log and are spoken
-// aloud through the shared TTS pipeline (toggleable).
+// the Gemini API key lives. Bot replies appear as text in the log.
 const GREETING = "Hi there! I'm your chat buddy. Sign a message with the camera and press Send to start our conversation!";
 
 export const RoleplayView: React.FC = () => {
@@ -23,14 +22,8 @@ export const RoleplayView: React.FC = () => {
   const [progress, setProgressState] = useState<UserProgress>(getProgress());
   const [isTyping, setIsTyping] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [speakReplies, setSpeakReplies] = useState(true);
 
   const chatBottomRef = useRef<HTMLDivElement>(null);
-  const speakRepliesRef = useRef(speakReplies);
-
-  useEffect(() => {
-    speakRepliesRef.current = speakReplies;
-  }, [speakReplies]);
 
   // Initialize Conversation
   useEffect(() => {
@@ -41,7 +34,6 @@ export const RoleplayView: React.FC = () => {
     // Initial bot greeting delay
     const timer = setTimeout(() => {
       setMessages([{ sender: 'bot', text: GREETING }]);
-      if (speakRepliesRef.current) speakText(GREETING);
       setIsTyping(false);
     }, 1500);
 
@@ -72,18 +64,11 @@ export const RoleplayView: React.FC = () => {
     try {
       const reply = await sendChatMessage(message, history);
       setMessages(prev => [...prev, { sender: 'bot', text: reply }]);
-      if (speakRepliesRef.current) speakText(reply);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong — please try again.');
     } finally {
       setIsTyping(false);
     }
-  };
-
-  const toggleSpeak = () => {
-    const next = !speakReplies;
-    if (!next) stopSpeaking(); // muting also stops any reply mid-speech
-    setSpeakReplies(next);
   };
 
   return (
@@ -104,7 +89,7 @@ export const RoleplayView: React.FC = () => {
         {/* ── Camera + Controls (shown below chat on mobile) ── */}
         <div className="w-full lg:w-[60%] flex flex-col gap-4 sm:gap-6 order-2 lg:order-2">
           <CameraView />
-          <ControlsBar />
+          <ControlsBar showSpeak={false} />
         </div>
 
         {/* ── Chat UI ── */}
@@ -119,13 +104,6 @@ export const RoleplayView: React.FC = () => {
                 <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 inline-block shrink-0"></span> Online
               </p>
             </div>
-            <button
-              onClick={toggleSpeak}
-              title={speakReplies ? 'Mute bot voice' : 'Speak bot replies out loud'}
-              className="w-10 h-10 sm:w-11 sm:h-11 shrink-0 bg-white hover:bg-blue-100 border-2 border-blue-100 rounded-xl sm:rounded-2xl text-lg sm:text-xl transition-all active:scale-95 touch-target"
-            >
-              {speakReplies ? '🔊' : '🔇'}
-            </button>
           </div>
 
           {/* Messages */}
