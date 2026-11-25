@@ -65,7 +65,7 @@ export const SpellingView: React.FC = () => {
     const next = pickNextTarget();
     setTargetWord(next);
     setCurrentLetterIdx(0);
-    dispatch(setTargetLetter(next[0]));
+    dispatch(setTargetLetter(next[0].toLowerCase()));
     return () => {
       dispatch(setTargetLetter(null));
     };
@@ -87,7 +87,7 @@ export const SpellingView: React.FC = () => {
       }
       expectedLetter = targetWord[effectiveIdx];
 
-      if (lastLetter === expectedLetter && !showSuccess) {
+      if (lastLetter.toLowerCase() === expectedLetter.toLowerCase() && !showSuccess) {
         playSuccessSound();
 
         // Find next non-space position
@@ -124,12 +124,12 @@ export const SpellingView: React.FC = () => {
             const next = pickNextTarget();
             setTargetWord(next);
             setCurrentLetterIdx(0);
-            dispatch(setTargetLetter(next[0]));
+            dispatch(setTargetLetter(next[0].toLowerCase()));
           }, 2000);
         } else {
           // ── Next letter ─────────────────────────────────────────────────
           setCurrentLetterIdx(nextIdx);
-          dispatch(setTargetLetter(targetWord[nextIdx]));
+          dispatch(setTargetLetter(targetWord[nextIdx].toLowerCase()));
         }
       }
     }
@@ -141,7 +141,7 @@ export const SpellingView: React.FC = () => {
 
   // Characters to display: split target into chars, skipping spaces for the
   // "letter tiles" row but keeping them visible as a gap between words.
-  const displayChars = targetWord.split('');
+  const displayChars = targetWord.toLowerCase().split('');
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6 w-full">
@@ -258,9 +258,9 @@ export const SpellingView: React.FC = () => {
               <div className="bg-fuchsia-50 border-4 border-fuchsia-100 text-fuchsia-600 font-bold px-4 py-3 sm:px-6 sm:py-4 rounded-2xl w-full text-sm sm:text-lg">
                 Sign the letter{' '}
                 <span className="font-black text-xl sm:text-2xl mx-1">
-                  {targetWord[currentLetterIdx] === ' '
+                  {(targetWord[currentLetterIdx] === ' '
                     ? targetWord[currentLetterIdx + 1] ?? ''
-                    : targetWord[currentLetterIdx]}
+                    : targetWord[currentLetterIdx]).toLowerCase()}
                 </span>
               </div>
             )}

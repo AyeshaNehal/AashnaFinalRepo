@@ -72,7 +72,7 @@ export const SignItChallenge: React.FC<SignItChallengeProps> = ({
       lastTextLengthRef.current = textLen;
 
       // Check if the committed letter matches our target.
-      if (committedLetter === targetLetter) {
+      if (committedLetter.toLowerCase() === targetLetter.toLowerCase()) {
         // SUCCESS!
         const timeToSignMs = Date.now() - startTimeRef.current;
         let xp = 5;
@@ -88,7 +88,7 @@ export const SignItChallenge: React.FC<SignItChallengeProps> = ({
         setTimeout(() => {
           onSuccess(xp, timeToSignMs);
         }, 800);
-      } else if (committedLetter && committedLetter !== targetLetter) {
+      } else if (committedLetter && committedLetter.toLowerCase() !== targetLetter.toLowerCase()) {
         // Wrong letter committed.
         playErrorSound();
         setShakeError(true);

@@ -7,12 +7,12 @@ import { getProgress, addXp, updateLetterStats, getNextSRSLetter, UserProgress }
 import { playSuccessSound, playBossWinSound, playErrorSound } from '../../utils/audio';
 
 // The AI Hand Coach now supports every letter!
-const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); 
+const ALPHABET = "abcdefghijklmnopqrstuvwxyz".split("");
 
 export const QuizView: React.FC = () => {
   const dispatch = useDispatch();
   const text = useSelector((state: RootState) => state.prediction.text);
-  const targetLetter = useSelector((state: RootState) => state.prediction.targetLetter) || 'A';
+  const targetLetter = useSelector((state: RootState) => state.prediction.targetLetter) || 'a';
   const currentHint = useSelector((state: RootState) => state.prediction.currentHint);
   
   const [streak, setStreak] = useState(0);
@@ -71,7 +71,7 @@ export const QuizView: React.FC = () => {
     if (text.length > 0) {
       const lastLetter = text[text.length - 1];
       
-      if (lastLetter === targetLetter && !showSuccess) {
+      if (lastLetter.toLowerCase() === targetLetter.toLowerCase() && !showSuccess) {
         setShowSuccess(true);
         playSuccessSound();
         

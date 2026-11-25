@@ -69,7 +69,7 @@ function letterBoost(word: string, letterStats: Record<string, { attempts: numbe
   if (!letterStats) return 0;
   let sum = 0;
   for (const ch of word) {
-    sum += Math.min(letterStats[ch.toUpperCase()]?.attempts ?? 0, ATTEMPT_CAP) / ATTEMPT_CAP;
+    sum += Math.min((letterStats[ch] ?? letterStats[ch.toUpperCase()])?.attempts ?? 0, ATTEMPT_CAP) / ATTEMPT_CAP;
   }
   return (sum / word.length) * STATS_WEIGHT;
 }

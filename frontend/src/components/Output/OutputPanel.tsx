@@ -178,7 +178,7 @@ export const OutputPanel: React.FC = () => {
               {/* ASL Reference Image */}
               <div className="w-28 h-28 sm:w-32 sm:h-32 mx-auto rounded-2xl bg-slate-50 border-2 border-slate-100 flex items-center justify-center overflow-hidden mb-4">
                 <img
-                  src={`/asl/${selectedEntry.letter}.jpg`}
+                  src={`/asl/${selectedEntry.letter.toUpperCase()}.jpg`}
                   alt={`ASL sign for ${selectedEntry.letter}`}
                   className="w-full h-full object-contain p-2"
                   onError={(e) => {

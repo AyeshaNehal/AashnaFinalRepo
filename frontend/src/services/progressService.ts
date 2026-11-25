@@ -17,7 +17,7 @@ const DEFAULT_PROGRESS: UserProgress = {
   letterStats: {},
 };
 
-const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+const ALPHABET = "abcdefghijklmnopqrstuvwxyz".split("");
 
 // Syncs Firestore down to local storage when user logs in
 export const syncProgressFromCloud = async () => {
@@ -93,11 +93,12 @@ export const addXp = (amount: number): UserProgress => {
 // Spaced Repetition System (SRS) - updates how hard a letter is based on time taken
 export const updateLetterStats = (letter: string, timeToSignMs: number) => {
   const p = getProgress();
-  if (!p.letterStats[letter]) {
-    p.letterStats[letter] = { attempts: 0, successes: 0, weight: 1.0 };
+  const normalizedLetter = letter.toLowerCase();
+  if (!p.letterStats[normalizedLetter]) {
+    p.letterStats[normalizedLetter] = p.letterStats[letter.toUpperCase()] ?? { attempts: 0, successes: 0, weight: 1.0 };
   }
   
-  const stat = p.letterStats[letter];
+  const stat = p.letterStats[normalizedLetter];
   stat.attempts += 1;
   stat.successes += 1;
   
@@ -122,7 +123,8 @@ export const getNextSRSLetter = (currentLetter: string): string => {
     // Skip current letter so we don't test it twice in a row
     if (letter === currentLetter) return { letter, weight: 0 };
     
-    const weight = p.letterStats[letter] ? p.letterStats[letter].weight : 1.0;
+    const stats = p.letterStats[letter] ?? p.letterStats[letter.toUpperCase()];
+    const weight = stats ? stats.weight : 1.0;
     totalWeight += weight;
     return { letter, weight };
   });
@@ -133,5 +135,5 @@ export const getNextSRSLetter = (currentLetter: string): string => {
     if (random <= 0) return item.letter;
   }
   
-  return 'A'; // fallback
+  return 'a'; // fallback
 };

@@ -99,7 +99,7 @@ export async function predictFrame(pixels: tf.Tensor3D, mode: SignMode): Promise
     // ── END DIAGNOSTIC ────────────────────────────────────────────────────────
 
     return {
-      letter: mode === "letters" || mode === "phrases" ? predicted.toUpperCase() : predicted,
+      letter: mode === "letters" || mode === "phrases" ? predicted.toLowerCase() : predicted,
       confidence,
       timestamp: Date.now(),
     };

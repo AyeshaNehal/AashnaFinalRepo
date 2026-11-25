@@ -155,7 +155,7 @@ export async function predictLandmarks(
 
     return {
       letter:     mode === "letters" || mode === "phrases"
-                    ? predicted.toUpperCase()
+                    ? predicted.toLowerCase()
                     : predicted,
       confidence,
       timestamp: now,

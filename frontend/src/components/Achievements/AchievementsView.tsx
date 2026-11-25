@@ -153,7 +153,7 @@ const BADGES: Badge[] = [
     description: 'Successfully sign all 5 vowels (A, E, I, O, U).',
     icon: '🗣️',
     color: 'bg-orange-400',
-    isUnlocked: (p) => ['A', 'E', 'I', 'O', 'U'].every(v => p.letterStats[v]),
+    isUnlocked: (p) => ['a', 'e', 'i', 'o', 'u'].every(v => p.letterStats[v] ?? p.letterStats[v.toUpperCase()]),
   },
   {
     id: 'level_50',

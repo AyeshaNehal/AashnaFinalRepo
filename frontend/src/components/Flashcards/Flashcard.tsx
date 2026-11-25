@@ -47,7 +47,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({
   // Front gets explicit front image or generic image if back image is explicitly set
   const frontImg = effectiveFrontImage ?? (effectiveBackImage ? genericImage : undefined);
   // Back gets explicit back image, or generic image, or defaults to standard ASL sign
-  const backImg = effectiveBackImage ?? (!effectiveFrontImage && genericImage ? genericImage : (genericImage ?? `/asl/${data.letter}.jpg`));
+  const backImg = effectiveBackImage ?? (!effectiveFrontImage && genericImage ? genericImage : (genericImage ?? `/asl/${data.letter.toUpperCase()}.jpg`));
 
   // Reset image error states when active images change
   useEffect(() => {

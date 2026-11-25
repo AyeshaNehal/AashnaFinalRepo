@@ -15,7 +15,7 @@ export const ModeSwitcher: React.FC = () => {
   const currentMode = useSelector((state: RootState) => state.prediction.signMode);
 
   const modes: { id: SignMode; label: string; icon: React.ReactNode }[] = [
-    { id: 'letters', label: 'Letters (A-Z)', icon: <Type className="w-4 h-4" /> },
+    { id: 'letters', label: 'Letters (a-z)', icon: <Type className="w-4 h-4" /> },
     { id: 'numbers', label: 'Numbers (0-9)', icon: <Hash className="w-4 h-4" /> }
   ];
 

@@ -33,14 +33,14 @@ function parseMessage(text: string): { items: PlaybackItem[]; words: string[] } 
     const clean = [...raw]
       .filter((c) => /^[A-Za-z0-9]$/.test(c))
       .join('')
-      .toUpperCase();
+      .toLowerCase();
     if (!clean) return;
     words.push(clean);
     const wi = words.length - 1;
     [...clean].forEach((ch, li) => {
       items.push({
         letter: ch,
-        imageSrc: `/asl/${ch}.jpg`,
+        imageSrc: `/asl/${ch.toUpperCase()}.jpg`,
         wordIndex: wi,
         letterInWordIndex: li,
       });

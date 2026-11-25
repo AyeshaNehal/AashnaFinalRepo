@@ -4,7 +4,8 @@
 // advanced users are challenged with 7–8 letter finger-spelling marathons.
 //
 // Conventions:
-// - All words are uppercase (matches the quiz / camera recognition flow).
+// - Words are stored uppercase; the UI displays each letter lowercase and
+//   compares recognition case-insensitively.
 // - Letters A–Z only — the camera recogniser doesn't handle digits in
 //   phrases mode, so no numbers appear here.
 // - Within each tier, words are shuffled at random on each session, so
