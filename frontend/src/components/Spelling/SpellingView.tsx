@@ -9,8 +9,10 @@ import { spellingTiers, WORDS_TO_ADVANCE, type SpellingTier } from '../../data/s
 import { phraseCategories, type PhraseCategory } from '../../data/phrases';
 
 // ─── Helper: pick a random element from an array ─────────────────────────────
-function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+function pick(arr: string[]): string | null {
+  const usableTargets = arr.filter((target) => target.trim().length > 0);
+  if (usableTargets.length === 0) return null;
+  return usableTargets[Math.floor(Math.random() * usableTargets.length)];
 }
 
 // ─── Mode selector tabs ──────────────────────────────────────────────────────
@@ -24,7 +26,7 @@ const TIER_COLORS: Record<SpellingTier, { bg: string; text: string; border: stri
   expert:       { bg: 'bg-rose-100',    text: 'text-rose-600',    border: 'border-rose-200'    },
 };
 
-export const SpellingView: React.FC = () => {
+const SpellingGame: React.FC = () => {
   const dispatch = useDispatch();
   const text = useSelector((state: RootState) => state.prediction.text);
 
@@ -34,7 +36,10 @@ export const SpellingView: React.FC = () => {
   // ── Words mode state ───────────────────────────────────────────────────────
   const [tierIdx, setTierIdx] = useState(0); // index into spellingTiers
   const [streakInTier, setStreakInTier] = useState(0);
-  const [targetWord, setTargetWord] = useState('');
+  // Give the first render a valid target; effects run only after render.
+  const [targetWord, setTargetWord] = useState<string | null>(
+    () => spellingTiers[0]?.words.find((word) => word.trim().length > 0) ?? null,
+  );
   const [currentLetterIdx, setCurrentLetterIdx] = useState(0);
 
   // ── Phrases mode state ─────────────────────────────────────────────────────
@@ -50,11 +55,11 @@ export const SpellingView: React.FC = () => {
   // ── Pick the next target (word or phrase) ──────────────────────────────────
   const pickNextTarget = React.useCallback(() => {
     if (mode === 'words') {
-      return pick(spellingTiers[tierIdx].words);
+      return pick(spellingTiers[tierIdx]?.words ?? []);
     }
     // phrases: pick from the active category
-    const cat = phraseCategories.find((c) => c.category === activeCategory)!;
-    return pick(cat.phrases);
+    const cat = phraseCategories.find((c) => c.category === activeCategory);
+    return pick(cat?.phrases ?? []);
   }, [mode, tierIdx, activeCategory]);
 
   // ── Initialise on mount / mode change ──────────────────────────────────────
@@ -65,7 +70,7 @@ export const SpellingView: React.FC = () => {
     const next = pickNextTarget();
     setTargetWord(next);
     setCurrentLetterIdx(0);
-    dispatch(setTargetLetter(next[0].toLowerCase()));
+    dispatch(setTargetLetter(next?.[0]?.toLowerCase() ?? null));
     return () => {
       dispatch(setTargetLetter(null));
     };
@@ -73,6 +78,10 @@ export const SpellingView: React.FC = () => {
 
   // ── React to recognised letters ────────────────────────────────────────────
   useEffect(() => {
+    if (!targetWord) {
+      previousTextLength.current = text.length;
+      return;
+    }
     if (text.length > previousTextLength.current) {
       const lastLetter = text[text.length - 1];
       // Spaces in phrases are auto-skipped (camera can't produce them).
@@ -124,7 +133,7 @@ export const SpellingView: React.FC = () => {
             const next = pickNextTarget();
             setTargetWord(next);
             setCurrentLetterIdx(0);
-            dispatch(setTargetLetter(next[0].toLowerCase()));
+            dispatch(setTargetLetter(next?.[0]?.toLowerCase() ?? null));
           }, 2000);
         } else {
           // ── Next letter ─────────────────────────────────────────────────
@@ -137,11 +146,11 @@ export const SpellingView: React.FC = () => {
   }, [text, currentLetterIdx, targetWord, showSuccess, dispatch, mode, tierIdx, streakInTier, pickNextTarget]);
 
   // ── UI helpers ─────────────────────────────────────────────────────────────
-  const tierColor = TIER_COLORS[tier.tier];
+  const tierColor = tier ? TIER_COLORS[tier.tier] : null;
 
   // Characters to display: split target into chars, skipping spaces for the
   // "letter tiles" row but keeping them visible as a gap between words.
-  const displayChars = targetWord.toLowerCase().split('');
+  const displayChars = (targetWord ?? '').toLowerCase().split('');
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6 w-full">
@@ -179,7 +188,7 @@ export const SpellingView: React.FC = () => {
 
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Tier badge (words mode) or category name (phrases mode) */}
-          {mode === 'words' ? (
+          {mode === 'words' && tier && tierColor ? (
             <div className={`${tierColor.bg} ${tierColor.text} font-black px-2.5 py-1.5 sm:px-3 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 sm:gap-2`}>
               <span>{tier.label}</span>
               {streakInTier > 0 && (
@@ -208,7 +217,7 @@ export const SpellingView: React.FC = () => {
       {/* ── Tier description (words mode, subtle) ──────────────────────────── */}
       {mode === 'words' && (
         <p className="text-xs sm:text-sm text-slate-400 font-bold text-center -mt-1 sm:-mt-2">
-          {tier.description}
+        {tier?.description ?? 'No spelling words are available right now.'}
         </p>
       )}
 
@@ -220,6 +229,12 @@ export const SpellingView: React.FC = () => {
             <h2 className="text-xl sm:text-2xl font-black text-slate-600 mb-4 sm:mb-8">
               {mode === 'phrases' ? 'Can you sign...' : 'Can you spell...'}
             </h2>
+
+            {!targetWord && (
+              <div role="status" className="mb-6 rounded-xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-700">
+                No {mode === 'phrases' ? 'phrases' : 'spelling words'} are available right now. Please try another mode later.
+              </div>
+            )}
 
             {/* Letter tiles */}
             <div className="flex justify-center gap-1.5 sm:gap-2 mb-6 sm:mb-12 flex-wrap">
@@ -244,7 +259,7 @@ export const SpellingView: React.FC = () => {
               })}
             </div>
 
-            {showSuccess ? (
+            {!targetWord ? null : showSuccess ? (
               <div className="bg-green-100 border-4 border-green-200 text-green-700 font-bold px-4 py-3 sm:px-6 sm:py-4 rounded-2xl w-full animate-bounce text-sm sm:text-lg flex flex-col items-center gap-1">
                 <span>🎉 {mode === 'phrases' ? 'Perfect Phrase!' : 'Perfect Spelling!'}</span>
                 <span className="text-base sm:text-xl">+{30 + targetWord.replace(/ /g, '').length * 5 + tierIdx * 10} XP</span>
@@ -275,3 +290,34 @@ export const SpellingView: React.FC = () => {
     </div>
   );
 };
+
+interface SpellingErrorBoundaryState {
+  hasError: boolean;
+}
+
+class SpellingErrorBoundary extends React.Component<React.PropsWithChildren, SpellingErrorBoundaryState> {
+  state: SpellingErrorBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): SpellingErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div role="alert" className="w-full rounded-2xl border border-rose-200 bg-white p-6 text-center shadow-sm">
+          <h2 className="text-lg font-black text-slate-700">Spelling Bee couldn’t load</h2>
+          <p className="mt-2 text-sm font-medium text-slate-500">Return to another tab or reload this feature.</p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+export const SpellingView: React.FC = () => (
+  <SpellingErrorBoundary>
+    <SpellingGame />
+  </SpellingErrorBoundary>
+);
